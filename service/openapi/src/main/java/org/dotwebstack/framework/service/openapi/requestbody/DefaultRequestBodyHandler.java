@@ -1,7 +1,7 @@
 package org.dotwebstack.framework.service.openapi.requestbody;
 
 import static java.util.Collections.singletonList;
-import static org.dotwebstack.framework.core.helpers.ExceptionHelper.invalidConfigurationException;
+import static org.dotwebstack.framework.service.openapi.exception.ExceptionHelper.illegalStateException;
 import static org.dotwebstack.framework.service.openapi.exception.OpenApiExceptionHelper.badRequestException;
 import static org.dotwebstack.framework.service.openapi.helper.SchemaResolver.resolveSchema;
 
@@ -24,14 +24,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import lombok.NonNull;
-import org.dotwebstack.framework.core.helpers.TypeHelper;
-import org.dotwebstack.framework.core.query.GraphQlArgument;
-import org.dotwebstack.framework.core.query.GraphQlField;
 import org.dotwebstack.framework.service.openapi.exception.BadRequestException;
 import org.dotwebstack.framework.service.openapi.helper.JsonNodeUtils;
 import org.dotwebstack.framework.service.openapi.helper.OasConstants;
 import org.dotwebstack.framework.service.openapi.mapping.TypeValidator;
 import org.dotwebstack.framework.service.openapi.response.RequestBodyContext;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.stereotype.Component;
@@ -44,16 +42,13 @@ public class DefaultRequestBodyHandler implements RequestBodyHandler {
 
   private final OpenAPI openApi;
 
-  private final TypeDefinitionRegistry typeDefinitionRegistry;
-
   private final TypeValidator typeValidator;
 
   private final ObjectMapper objectMapper;
 
-  public DefaultRequestBodyHandler(@NonNull OpenAPI openApi, @NonNull TypeDefinitionRegistry typeDefinitionRegistry,
-      @NonNull Jackson2ObjectMapperBuilder jackson2ObjectMapperBuilder) {
+  public DefaultRequestBodyHandler(@NonNull OpenAPI openApi,
+                                   @Qualifier("default") @NonNull Jackson2ObjectMapperBuilder jackson2ObjectMapperBuilder) {
     this.openApi = openApi;
-    this.typeDefinitionRegistry = typeDefinitionRegistry;
     this.typeValidator = new TypeValidator();
     this.objectMapper = jackson2ObjectMapperBuilder.build();
   }
@@ -84,57 +79,29 @@ public class DefaultRequestBodyHandler implements RequestBodyHandler {
   }
 
   @Override
-  public void validate(@NonNull GraphQlField graphQlField, @NonNull RequestBody requestBody, @NonNull String pathName) {
+  public void validate(@NonNull String fieldName, @NonNull RequestBody requestBody, @NonNull String pathName) {
     requestBody.getContent()
         .forEach((key, mediaType) -> {
           Schema<?> schema = resolveSchema(openApi, mediaType.getSchema());
           String type = schema.getType();
           if (!Objects.equals(type, OasConstants.OBJECT_TYPE)) {
-            throw invalidConfigurationException("Schema type '{}' not supported for request body.", type);
+            throw illegalStateException("Schema type '{}' not supported for request body.", type);
           }
-          validate(schema, graphQlField, pathName);
+          validate(schema, fieldName, pathName);
         });
   }
 
   @SuppressWarnings("rawtypes")
-  private void validate(Schema<?> schema, GraphQlField graphQlField, String pathName) {
+  private void validate(Schema<?> schema, String graphQlField, String pathName) {
     if (Objects.nonNull(schema.getExtensions()) && !schema.getExtensions()
         .isEmpty()) {
-      throw invalidConfigurationException("Extensions are not supported for requestBody in path '{}'.", pathName);
+      throw illegalStateException("Extensions are not supported for requestBody in path '{}'.", pathName);
     }
-    Map<String, Schema> properties = schema.getProperties();
-    properties.forEach((name, propertySchema) -> {
-      GraphQlArgument argument = graphQlField.getArguments()
-          .stream()
-          .filter(a -> Objects.equals(a.getName(), name))
-          .findFirst()
-          .orElseThrow(() -> invalidConfigurationException(
-              "OAS property '{}' for path '{}' was not found as a " + "GraphQL argument on field '{}'.", name, pathName,
-              graphQlField.getName()));
-      validate(name, propertySchema, argument.getType(), pathName);
-    });
   }
 
   @SuppressWarnings("rawtypes")
   private void validate(String propertyName, Schema<?> propertySchema, Type graphQlType, String pathName) {
-    Schema<?> schema = resolveSchema(openApi, propertySchema);
-    var unwrapped = TypeHelper.unwrapNonNullType(graphQlType);
-    validatePropertyType(propertyName, schema.getType(), unwrapped);
-    if (OasConstants.OBJECT_TYPE.equals(schema.getType())) {
-      TypeDefinition<?> typeDefinition = this.typeDefinitionRegistry.getType(unwrapped)
-          .orElseThrow(
-              () -> invalidConfigurationException("Could not find type definition of GraphQL type '{}'", unwrapped));
 
-      if (typeDefinition instanceof InputObjectTypeDefinition) {
-        validateProperties(pathName, schema, (InputObjectTypeDefinition) typeDefinition);
-      }
-    } else if (OasConstants.ARRAY_TYPE.equals(schema.getType())) {
-      Schema<?> itemSchema = ((ArraySchema) schema).getItems();
-      validate(propertyName, itemSchema, TypeHelper.getBaseType(unwrapped), pathName);
-    } else {
-      this.typeValidator.validateTypesOpenApiToGraphQ(schema.getType(), TypeHelper.getTypeName(unwrapped),
-          propertyName);
-    }
   }
 
   void validatePropertyType(String propertyName, String oasType, Type<?> graphQlType) {
@@ -146,7 +113,7 @@ public class DefaultRequestBodyHandler implements RequestBodyHandler {
     }
     if (Objects.nonNull(expectedClass) && !graphQlType.getClass()
         .isAssignableFrom(expectedClass)) {
-      throw invalidConfigurationException("Property '{}' with OAS object type '{}' it should be mapped to type '{}'.",
+      throw illegalStateException("Property '{}' with OAS object type '{}' it should be mapped to type '{}'.",
           propertyName, oasType, expectedClass.getName());
     }
   }
@@ -159,7 +126,7 @@ public class DefaultRequestBodyHandler implements RequestBodyHandler {
           .stream()
           .filter(iv -> Objects.equals(iv.getName(), name))
           .findFirst()
-          .orElseThrow(() -> invalidConfigurationException(
+          .orElseThrow(() -> illegalStateException(
               "OAS property '{}' for path '{}' was not found as a " + "GraphQL intput value on input object type '{}'",
               name, pathName, typeDefinition.getName()));
       validate(name, childSchema, inputValueDefinition.getType(), pathName);

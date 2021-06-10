@@ -1,6 +1,6 @@
 package org.dotwebstack.framework.service.openapi.helper;
 
-import static org.dotwebstack.framework.service.openapi.exception.OpenApiExceptionHelper.invalidOpenApiConfigurationException;
+import static org.dotwebstack.framework.service.openapi.exception.ExceptionHelper.illegalStateException;
 
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.media.Schema;
@@ -22,7 +22,7 @@ public class SchemaResolver {
     }
 
     if (Objects.isNull(schema)) {
-      throw invalidOpenApiConfigurationException("Schema can't be null if ref is also null.");
+      throw illegalStateException("Schema can't be null if ref is also null.");
     }
 
     return schema;
@@ -33,7 +33,7 @@ public class SchemaResolver {
     String[] path = StringUtils.substringAfter(ref, "components/")
         .split("/");
     if (path.length != 2) {
-      throw invalidOpenApiConfigurationException(
+      throw illegalStateException(
           "Schema reference '{}' should start with #/components/headers or #/components/schemas", ref);
     }
 
@@ -51,12 +51,12 @@ public class SchemaResolver {
             .getSchema();
         break;
       default:
-        throw invalidOpenApiConfigurationException(
+        throw illegalStateException(
             "Schema reference '{}' should start with #/components/headers or #/components/schema", ref);
     }
 
     if (Objects.isNull(result)) {
-      throw invalidOpenApiConfigurationException("Schema definition can't be found for reference '{}'", ref);
+      throw illegalStateException("Schema definition can't be found for reference '{}'", ref);
     }
 
     return result;

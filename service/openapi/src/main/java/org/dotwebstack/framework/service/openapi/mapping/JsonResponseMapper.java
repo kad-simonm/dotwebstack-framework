@@ -28,12 +28,13 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.NonNull;
+import org.apache.commons.jexl3.JexlBuilder;
 import org.apache.commons.jexl3.JexlContext;
-import org.apache.commons.jexl3.JexlEngine;
 import org.apache.commons.jexl3.MapContext;
-import org.dotwebstack.framework.core.jexl.JexlHelper;
 import org.dotwebstack.framework.service.openapi.conversion.TypeConverterRouter;
+import org.dotwebstack.framework.service.openapi.fromcore.ResponseMapper;
 import org.dotwebstack.framework.service.openapi.helper.OasConstants;
+import org.dotwebstack.framework.service.openapi.jexl.JexlHelper;
 import org.dotwebstack.framework.service.openapi.response.FieldContext;
 import org.dotwebstack.framework.service.openapi.response.ResponseObject;
 import org.dotwebstack.framework.service.openapi.response.ResponseWriteContext;
@@ -42,7 +43,7 @@ import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.stereotype.Component;
 
 @Component
-public class JsonResponseMapper {
+public class JsonResponseMapper{
 
   private static final Map<String, Class<?>> TYPE_CLASS_MAPPING =
       Map.of("string", String.class, "integer", Integer.class);
@@ -55,10 +56,12 @@ public class JsonResponseMapper {
 
   private final TypeConverterRouter typeConverterRouter;
 
-  public JsonResponseMapper(Jackson2ObjectMapperBuilder objectMapperBuilder, JexlEngine jexlEngine,
+  public JsonResponseMapper(Jackson2ObjectMapperBuilder objectMapperBuilder,
       EnvironmentProperties properties, TypeConverterRouter typeConverterRouter) {
     this.objectMapper = objectMapperBuilder.build();
-    this.jexlHelper = new JexlHelper(jexlEngine);
+    this.jexlHelper = new JexlHelper(    new JexlBuilder().silent(false)
+        .strict(true)
+        .create());
     this.properties = properties;
     this.typeConverterRouter = typeConverterRouter;
   }
@@ -427,7 +430,7 @@ public class JsonResponseMapper {
 
   @SuppressWarnings("unchecked")
   private Optional<String> evaluateJexl(ResponseWriteContext writeContext) {
-    var context = JexlHelper.getJexlContext(null, writeContext.getParameters(), writeContext.getGraphQlField(), null);
+    var context = JexlHelper.getJexlContext(null, writeContext.getParameters(), writeContext.getFieldName(), null);
 
     // add object data to context
     writeContext.getParameters()

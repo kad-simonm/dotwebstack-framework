@@ -4,7 +4,7 @@ import static io.swagger.v3.oas.models.parameters.Parameter.StyleEnum.FORM;
 import static io.swagger.v3.oas.models.parameters.Parameter.StyleEnum.PIPEDELIMITED;
 import static io.swagger.v3.oas.models.parameters.Parameter.StyleEnum.SIMPLE;
 import static io.swagger.v3.oas.models.parameters.Parameter.StyleEnum.SPACEDELIMITED;
-import static org.dotwebstack.framework.core.helpers.ExceptionHelper.illegalArgumentException;
+import static org.dotwebstack.framework.service.openapi.exception.ExceptionHelper.illegalArgumentException;
 import static org.dotwebstack.framework.service.openapi.exception.OpenApiExceptionHelper.parameterValidationException;
 import static org.dotwebstack.framework.service.openapi.helper.OasConstants.ARRAY_TYPE;
 import static org.dotwebstack.framework.service.openapi.helper.OasConstants.DATETIME_FORMAT;
@@ -39,8 +39,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import lombok.NonNull;
-import org.dotwebstack.framework.core.helpers.ExceptionHelper;
-import org.dotwebstack.framework.core.query.GraphQlField;
+import org.dotwebstack.framework.service.openapi.exception.ExceptionHelper;
 import org.dotwebstack.framework.service.openapi.helper.JsonNodeUtils;
 import org.dotwebstack.framework.service.openapi.response.ResponseSchemaContext;
 import org.springframework.web.reactive.function.server.ServerRequest;
@@ -100,7 +99,7 @@ public class DefaultParamHandler implements ParamHandler {
   }
 
   @Override
-  public void validate(GraphQlField field, Parameter parameter, String pathName) {
+  public void validate(String field, Parameter parameter, String pathName) {
     String parameterName = parameter.getName();
     if (Objects.nonNull(parameter.getExtensions())) {
       if (parameter.getExtensions()
@@ -112,19 +111,6 @@ public class DefaultParamHandler implements ParamHandler {
         parameterName = (String) parameter.getExtensions()
             .get(X_DWS_NAME);
       }
-    }
-
-    this.validate(field, parameterName, pathName);
-  }
-
-  public void validate(GraphQlField field, String parameterName, String pathName) {
-    if (field.getArguments()
-        .stream()
-        .noneMatch(argument -> argument.getName()
-            .equals(parameterName))) {
-      throw ExceptionHelper.invalidConfigurationException(
-          "OAS argument '{}' for path '{}' was not found on GraphQL field '{}'", parameterName, pathName,
-          field.getName());
     }
   }
 

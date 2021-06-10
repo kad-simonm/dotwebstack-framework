@@ -1,6 +1,6 @@
 package org.dotwebstack.framework.service.openapi.response;
 
-import static org.dotwebstack.framework.core.helpers.ExceptionHelper.invalidConfigurationException;
+import static org.dotwebstack.framework.service.openapi.exception.ExceptionHelper.illegalArgumentException;
 import static org.dotwebstack.framework.service.openapi.helper.DwsExtensionHelper.getDwsExtension;
 import static org.dotwebstack.framework.service.openapi.helper.DwsExtensionHelper.getDwsQueryName;
 import static org.dotwebstack.framework.service.openapi.helper.DwsExtensionHelper.getDwsType;
@@ -31,6 +31,7 @@ import java.util.stream.Collectors;
 import lombok.Builder;
 import lombok.NonNull;
 import org.dotwebstack.framework.service.openapi.HttpMethodOperation;
+import org.dotwebstack.framework.service.openapi.exception.ExceptionHelper;
 import org.dotwebstack.framework.service.openapi.helper.DwsExtensionHelper;
 import org.dotwebstack.framework.service.openapi.helper.OasConstants;
 
@@ -122,7 +123,7 @@ public class ResponseTemplateBuilder {
 
     if (Objects.isNull(schema.getExtensions()) || Objects.isNull(schema.getExtensions()
         .get(X_DWS_EXPR))) {
-      throw invalidConfigurationException(
+      throw illegalArgumentException(
           "Found invalid schema for response header '{}' of query '{}': x-dws-expr is missing or null",
           headerEntry.getKey(), queryName);
     }
@@ -181,7 +182,7 @@ public class ResponseTemplateBuilder {
     parents.add(responseObject.getIdentifier());
 
     if (Objects.isNull(oasSchema.getType())) {
-      throw invalidConfigurationException(
+      throw illegalArgumentException(
           "Found invalid schema for OAS response object '{}' for responseCode '{}': schema's cannot have type 'null'",
           responseObject.getIdentifier(), responseCode);
     }
@@ -199,7 +200,7 @@ public class ResponseTemplateBuilder {
   private void resolveComposedSchema(ResponseObject responseObject, OpenAPI openApi,
       Map<String, SchemaSummary> referenceMap, List<String> parents, ComposedSchema oasSchema, String responseCode) {
     if (Objects.nonNull(oasSchema.getOneOf()) || Objects.nonNull(oasSchema.getAnyOf())) {
-      throw invalidConfigurationException("The use of oneOf and anyOf schema's is currently not supported");
+      throw illegalArgumentException("The use of oneOf and anyOf schema's is currently not supported");
     }
 
     List<ResponseObject> composedSchemas = oasSchema.getAllOf()
@@ -212,7 +213,7 @@ public class ResponseTemplateBuilder {
           }
 
           if (!OBJECT_TYPE.equals(schema.getType())) {
-            throw invalidConfigurationException("Field '{}' for response code '{}' is configured incorrectly,"
+            throw illegalArgumentException("Field '{}' for response code '{}' is configured incorrectly,"
                 + " allOf schema's only support object schema's", responseObject.getIdentifier(), responseCode);
           }
 
@@ -378,7 +379,7 @@ public class ResponseTemplateBuilder {
     }
 
     if (Objects.equals(OasConstants.OBJECT_TYPE, schema.getType())) {
-      throw invalidConfigurationException("Extension '{}' is not allowed for `object` type", X_DWS_EXPR);
+      throw illegalArgumentException("Extension '{}' is not allowed for `object` type", X_DWS_EXPR);
     }
 
     if (result instanceof String) {
@@ -386,7 +387,7 @@ public class ResponseTemplateBuilder {
     }
 
     if (!(result instanceof Map) || !((Map) result).containsKey(X_DWS_EXPR_VALUE)) {
-      throw invalidConfigurationException("Extension '{}' should contain a key named '{}'.", X_DWS_EXPR,
+      throw illegalArgumentException("Extension '{}' should contain a key named '{}'.", X_DWS_EXPR,
           X_DWS_EXPR_VALUE);
     }
 

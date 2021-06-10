@@ -7,13 +7,10 @@ import java.util.List;
 import java.util.Map;
 import lombok.Builder;
 import lombok.Getter;
-import org.dotwebstack.framework.core.query.GraphQlField;
 
 @Getter
 @Builder
 public class ResponseSchemaContext {
-
-  private final GraphQlField graphQlField;
 
   @Builder.Default
   private final List<String> requiredFields = new ArrayList<>();
@@ -29,4 +26,9 @@ public class ResponseSchemaContext {
 
   private final RequestBodyContext requestBodyContext;
 
+  private final String fieldName;
+
+  public ResponseTemplate getOkResponse() {
+    return this.getResponses().stream().filter(r->r.getResponseCode()==200).findFirst().orElseThrow();
+  }
 }

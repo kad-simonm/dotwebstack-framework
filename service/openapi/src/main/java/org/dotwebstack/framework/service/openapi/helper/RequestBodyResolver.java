@@ -7,7 +7,7 @@ import io.swagger.v3.oas.models.parameters.RequestBody;
 import java.util.Map;
 import java.util.Objects;
 import lombok.NonNull;
-import org.dotwebstack.framework.core.helpers.ExceptionHelper;
+import org.dotwebstack.framework.service.openapi.exception.ExceptionHelper;
 
 public class RequestBodyResolver {
 
@@ -21,14 +21,14 @@ public class RequestBodyResolver {
     if (Objects.nonNull(requestBody.get$ref())) {
       String ref = requestBody.get$ref();
       if (!ref.startsWith(REQUEST_BODIES_PATH)) {
-        throw ExceptionHelper.invalidConfigurationException(
+        throw ExceptionHelper.illegalStateException(
             format("$ref [%s] for requestBody should start with [%s]", ref, REQUEST_BODIES_PATH));
       }
       var requestBodyName = ref.substring(REQUEST_BODIES_PATH.length());
       Map<String, RequestBody> requestBodies = openApi.getComponents()
           .getRequestBodies();
       if (Objects.isNull(requestBodies) || Objects.isNull(requestBodies.get(requestBodyName))) {
-        throw ExceptionHelper.invalidConfigurationException(
+        throw ExceptionHelper.illegalStateException(
             format("Could not find requestBody with name [%s] from $ref [%s]", requestBodyName, ref));
       }
       return requestBodies.get(requestBodyName);

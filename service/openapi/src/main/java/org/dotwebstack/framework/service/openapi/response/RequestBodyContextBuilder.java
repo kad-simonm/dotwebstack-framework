@@ -1,12 +1,11 @@
 package org.dotwebstack.framework.service.openapi.response;
 
-import static org.dotwebstack.framework.core.helpers.ExceptionHelper.illegalArgumentException;
-import static org.dotwebstack.framework.core.helpers.ExceptionHelper.invalidConfigurationException;
-
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.parameters.RequestBody;
 import java.util.Objects;
 import org.dotwebstack.framework.service.openapi.helper.RequestBodyResolver;
+
+import static org.dotwebstack.framework.service.openapi.exception.ExceptionHelper.illegalArgumentException;
 
 public class RequestBodyContextBuilder {
 
@@ -35,7 +34,7 @@ public class RequestBodyContextBuilder {
         .get(org.springframework.http.MediaType.APPLICATION_JSON.toString());
 
     if (Objects.isNull(mediaType)) {
-      throw invalidConfigurationException("Media type '{}' not found on request body.",
+      throw illegalArgumentException("Media type '{}' not found on request body.",
           org.springframework.http.MediaType.APPLICATION_JSON.toString());
     }
   }

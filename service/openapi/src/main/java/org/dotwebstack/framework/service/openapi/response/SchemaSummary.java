@@ -46,4 +46,8 @@ public class SchemaSummary {
         .containsKey(OasConstants.X_DWS_INCLUDE);
   }
 
+  public boolean isEnvelope() {
+    return getSchema() != null && getSchema().getExtensions() != null && getSchema().getExtensions()
+        .containsKey(OasConstants.X_DWS_ENVELOPE);
+  }
 }

@@ -9,8 +9,6 @@ import static org.springframework.http.HttpStatus.UNSUPPORTED_MEDIA_TYPE;
 
 import java.util.List;
 import java.util.Optional;
-import org.dotwebstack.framework.core.InvalidConfigurationException;
-import org.dotwebstack.framework.core.templating.TemplatingException;
 import org.dotwebstack.framework.service.openapi.mapping.MappingException;
 
 public class ExceptionRuleHelper {
@@ -58,16 +56,6 @@ public class ExceptionRuleHelper {
           .responseStatus(BAD_REQUEST)
           .title("Error while processing the request")
           .detail(true)
-          .build(),
-      ExceptionRule.builder()
-          .exception(InvalidConfigurationException.class)
-          .responseStatus(BAD_REQUEST)
-          .title("Bad configuration")
-          .build(),
-      ExceptionRule.builder()
-          .exception(TemplatingException.class)
-          .responseStatus(INTERNAL_SERVER_ERROR)
-          .title("Templating went wrong")
           .build());
 
   public static Optional<ExceptionRule> getExceptionRule(Throwable throwable) {

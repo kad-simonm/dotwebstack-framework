@@ -1,6 +1,5 @@
 package org.dotwebstack.framework.service.openapi.handler;
 
-import static org.dotwebstack.framework.core.helpers.ExceptionHelper.invalidConfigurationException;
 import static org.springframework.web.reactive.function.BodyInserters.fromPublisher;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -26,7 +25,7 @@ public class OpenApiRequestHandler implements HandlerFunction<ServerResponse> {
       openApiSpec = mapper.writer()
           .writeValueAsString(specNode);
     } catch (IOException e) {
-      throw invalidConfigurationException("An unexpected error occurred while parsing the OpenApi Specification: {}",
+      throw new RuntimeException("An unexpected error occurred while parsing the OpenApi Specification: {}",
           e);
     }
   }

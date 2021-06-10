@@ -1,6 +1,5 @@
 package org.dotwebstack.framework.service.openapi.exception;
 
-import org.dotwebstack.framework.core.helpers.ExceptionHelper;
 import org.dotwebstack.framework.service.openapi.mapping.MappingException;
 
 public class OpenApiExceptionHelper extends ExceptionHelper {
@@ -35,8 +34,4 @@ public class OpenApiExceptionHelper extends ExceptionHelper {
     return new NotAcceptableException(formatMessage(message, arguments), findCause(arguments));
   }
 
-  public static InvalidOpenApiConfigurationException invalidOpenApiConfigurationException(String message,
-      Object... arguments) {
-    return new InvalidOpenApiConfigurationException(formatMessage(message, arguments), findCause(arguments));
-  }
 }

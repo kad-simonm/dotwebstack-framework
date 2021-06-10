@@ -7,7 +7,6 @@ import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.parameters.Parameter;
 import java.util.Optional;
 import lombok.NonNull;
-import org.dotwebstack.framework.core.query.GraphQlField;
 import org.dotwebstack.framework.service.openapi.response.ResponseSchemaContext;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.server.ServerRequest;
@@ -31,7 +30,7 @@ public class TransientParamHandler extends DefaultParamHandler {
   }
 
   @Override
-  public void validate(@NonNull GraphQlField graphQlField, @NonNull Parameter parameter, @NonNull String pathName) {
+  public void validate(@NonNull String graphQlField, @NonNull Parameter parameter, @NonNull String pathName) {
     return;
   }
 }

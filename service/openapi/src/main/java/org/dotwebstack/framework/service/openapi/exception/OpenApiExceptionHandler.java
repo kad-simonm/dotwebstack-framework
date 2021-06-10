@@ -18,7 +18,6 @@ import java.util.List;
 import java.util.Optional;
 import org.apache.commons.jexl3.JexlEngine;
 import org.apache.commons.jexl3.MapContext;
-import org.dotwebstack.framework.core.jexl.JexlHelper;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpRequest;
@@ -64,14 +63,12 @@ public class OpenApiExceptionHandler implements WebExceptionHandler {
 
   private final HttpAdviceTrait advice;
 
-  private final JexlHelper jexlHelper;
 
   public OpenApiExceptionHandler(final OpenAPI openApi, final ObjectMapper objectMapper,
-      final HttpAdviceTrait httpAdviceTrait, final JexlEngine jexlEngine) {
+      final HttpAdviceTrait httpAdviceTrait) {
     this.openApi = openApi;
     this.mapper = objectMapper;
     this.advice = httpAdviceTrait;
-    this.jexlHelper = new JexlHelper(jexlEngine);
   }
 
   @Override
@@ -131,30 +128,6 @@ public class OpenApiExceptionHandler implements WebExceptionHandler {
 
     var mapContext = getMapContext(exchange);
 
-    getSchema(exchange, responseStatus).ifPresent(schema -> {
-      resolveExpressionUri(schema, mapContext, OAS_JSON_PROBLEM_TYPE).ifPresent(builder::withType);
-      resolveExpression(schema, mapContext, OAS_JSON_PROBLEM_TITLE).map(Object::toString)
-          .ifPresent(builder::withTitle);
-      resolveExpression(schema, mapContext, OAS_JSON_PROBLEM_DETAIL).map(Object::toString)
-          .ifPresent(builder::withDetail);
-      resolveExpressionUri(schema, mapContext, OAS_JSON_PROBLEM_INSTANCE).ifPresent(builder::withInstance);
-
-      schema.getProperties()
-          .keySet()
-          .stream()
-          .filter(property -> !OAS_JSON_PROBLEM_PROPERTIES.contains(property))
-          .forEach(property -> {
-            if (schema.getProperties()
-                .get(property)
-                .getType()
-                .equals("array")) {
-              resolveExpressionArray(schema, mapContext, property).ifPresent(value -> builder.with(property, value));
-            } else {
-              resolveExpression(schema, mapContext, property).ifPresent(value -> builder.with(property, value));
-            }
-          });
-    });
-
     return builder.build();
   }
 
@@ -178,22 +151,6 @@ public class OpenApiExceptionHandler implements WebExceptionHandler {
         .map(content -> content.get(APPLICATION_PROBLEM_JSON_MIMETYPE))
         .map(MediaType::getSchema)
         .map(s -> resolveSchema(openApi, s));
-  }
-
-  @SuppressWarnings("rawtypes")
-  private Optional<URI> resolveExpressionUri(Schema<?> schema, MapContext mapContext, String property) {
-    return resolveExpression(schema, mapContext, property).map(Object::toString)
-        .map(URI::create);
-  }
-
-  @SuppressWarnings("rawtypes")
-  private Optional<Object> resolveExpression(Schema<?> schema, MapContext mapContext, String property) {
-    return resolveScript(schema, property).flatMap(s -> jexlHelper.evaluateScript(s, mapContext, Object.class));
-  }
-
-  @SuppressWarnings("rawtypes")
-  private Optional<Object[]> resolveExpressionArray(Schema<?> schema, MapContext mapContext, String property) {
-    return resolveScript(schema, property).flatMap(s -> jexlHelper.evaluateScript(s, mapContext, Object[].class));
   }
 
   @SuppressWarnings("rawtypes")

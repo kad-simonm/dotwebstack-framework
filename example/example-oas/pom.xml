@@ -14,7 +14,7 @@
   <dependencies>
     <dependency>
       <groupId>org.dotwebstack.framework</groupId>
-      <artifactId>service-openapi2</artifactId>
+      <artifactId>service-openapi</artifactId>
       <version>${project.version}</version>
     </dependency>
   </dependencies>

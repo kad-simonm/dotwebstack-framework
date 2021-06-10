@@ -13,7 +13,7 @@ import static org.dotwebstack.framework.service.openapi.helper.OasConstants.STRI
 import java.util.List;
 import java.util.Objects;
 import lombok.NonNull;
-import org.dotwebstack.framework.core.helpers.ExceptionHelper;
+import org.dotwebstack.framework.service.openapi.exception.ExceptionHelper;
 
 public class TypeValidator {
 
@@ -30,29 +30,29 @@ public class TypeValidator {
             .equals(graphQlType)
             && !GraphQLString.getName()
                 .equals(graphQlType)) {
-          throw ExceptionHelper.invalidConfigurationException(MAPPING_ERROR_TO, oasType, identifier, graphQlType);
+          throw ExceptionHelper.illegalArgumentException(MAPPING_ERROR_TO, oasType, identifier, graphQlType);
         }
         break;
       case NUMBER_TYPE:
         if (!List.of(GraphQLFloat.getName(), GraphQLInt.getName(), GraphQLString.getName())
             .contains(graphQlType)) {
-          throw ExceptionHelper.invalidConfigurationException(MAPPING_ERROR_TO, oasType, identifier, graphQlType);
+          throw ExceptionHelper.illegalArgumentException(MAPPING_ERROR_TO, oasType, identifier, graphQlType);
         }
         break;
       case INTEGER_TYPE:
         if (!List.of(GraphQLInt.getName(), GraphQLString.getName())
             .contains(graphQlType)) {
-          throw ExceptionHelper.invalidConfigurationException(MAPPING_ERROR_TO, oasType, identifier, graphQlType);
+          throw ExceptionHelper.illegalArgumentException(MAPPING_ERROR_TO, oasType, identifier, graphQlType);
         }
         break;
       case BOOLEAN_TYPE:
         if (!GraphQLBoolean.getName()
             .equals(graphQlType)) {
-          throw ExceptionHelper.invalidConfigurationException(MAPPING_ERROR_TO, oasType, identifier, graphQlType);
+          throw ExceptionHelper.illegalArgumentException(MAPPING_ERROR_TO, oasType, identifier, graphQlType);
         }
         break;
       default:
-        throw ExceptionHelper.invalidConfigurationException("OAS type '{}' is currently not supported.", oasType);
+        throw ExceptionHelper.illegalArgumentException("OAS type '{}' is currently not supported.", oasType);
     }
   }
 
@@ -64,22 +64,22 @@ public class TypeValidator {
       case NUMBER_TYPE:
         if (!List.of(GraphQLFloat.getName(), GraphQLInt.getName())
             .contains(graphQlType)) {
-          throw ExceptionHelper.invalidConfigurationException(MAPPING_ERROR_FROM, oasType, identifier, graphQlType);
+          throw ExceptionHelper.illegalArgumentException(MAPPING_ERROR_FROM, oasType, identifier, graphQlType);
         }
         break;
       case INTEGER_TYPE:
         if (!Objects.equals(GraphQLInt.getName(), graphQlType)) {
-          throw ExceptionHelper.invalidConfigurationException(MAPPING_ERROR_FROM, oasType, identifier, graphQlType);
+          throw ExceptionHelper.illegalArgumentException(MAPPING_ERROR_FROM, oasType, identifier, graphQlType);
         }
         break;
       case BOOLEAN_TYPE:
         if (!GraphQLBoolean.getName()
             .equals(graphQlType)) {
-          throw ExceptionHelper.invalidConfigurationException(MAPPING_ERROR_FROM, oasType, identifier, graphQlType);
+          throw ExceptionHelper.illegalArgumentException(MAPPING_ERROR_FROM, oasType, identifier, graphQlType);
         }
         break;
       default:
-        throw ExceptionHelper.invalidConfigurationException("OAS type '{}' is currently not supported.", oasType);
+        throw ExceptionHelper.illegalArgumentException("OAS type '{}' is currently not supported.", oasType);
     }
   }
 }

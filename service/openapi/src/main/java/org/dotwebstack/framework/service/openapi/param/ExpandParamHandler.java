@@ -1,7 +1,7 @@
 package org.dotwebstack.framework.service.openapi.param;
 
-import static org.dotwebstack.framework.core.helpers.ExceptionHelper.illegalStateException;
-import static org.dotwebstack.framework.service.openapi.exception.OpenApiExceptionHelper.invalidOpenApiConfigurationException;
+import static org.dotwebstack.framework.service.openapi.exception.ExceptionHelper.illegalArgumentException;
+import static org.dotwebstack.framework.service.openapi.exception.ExceptionHelper.illegalStateException;
 import static org.dotwebstack.framework.service.openapi.helper.DwsExtensionHelper.isTransient;
 import static org.dotwebstack.framework.service.openapi.helper.DwsExtensionHelper.supportsDwsType;
 import static org.dotwebstack.framework.service.openapi.helper.OasConstants.ARRAY_TYPE;
@@ -26,7 +26,6 @@ import java.util.StringJoiner;
 import java.util.stream.Stream;
 import lombok.NonNull;
 import org.apache.commons.lang3.ArrayUtils;
-import org.dotwebstack.framework.core.query.GraphQlField;
 import org.dotwebstack.framework.service.openapi.helper.DwsExtensionHelper;
 import org.dotwebstack.framework.service.openapi.helper.JsonNodeUtils;
 import org.dotwebstack.framework.service.openapi.response.ResponseSchemaContext;
@@ -72,7 +71,7 @@ public class ExpandParamHandler extends DefaultParamHandler {
 
   @Override
   @SuppressWarnings({"rawtypes", "unchecked"})
-  public void validate(@NonNull GraphQlField graphQlField, @NonNull Parameter parameter, @NonNull String pathName) {
+  public void validate(@NonNull String fieldName, @NonNull Parameter parameter, @NonNull String pathName) {
     var schema = parameter.getSchema();
 
     switch (schema.getType()) {
@@ -80,43 +79,25 @@ public class ExpandParamHandler extends DefaultParamHandler {
         if (Objects.nonNull(schema.getDefault())) {
           ((ArrayList<String>) Objects.requireNonNull(JsonNodeUtils.toObject((ArrayNode) schema.getDefault())))
               .forEach(defaultValue -> {
-                validateExpandParam(graphQlField, defaultValue, pathName);
+                validateExpandParam(fieldName, defaultValue, pathName);
                 validateValues(defaultValue, parameter);
               });
         }
         ((ArraySchema) schema).getItems()
             .getEnum()
-            .forEach((enumParam -> validateExpandParam(graphQlField, (String) enumParam, pathName)));
+            .forEach((enumParam -> validateExpandParam(fieldName, (String) enumParam, pathName)));
         break;
       case STRING_TYPE:
         if (Objects.nonNull(schema.getDefault())) {
-          validateExpandParam(graphQlField, ((StringSchema) schema).getDefault(), pathName);
+          validateExpandParam(fieldName, ((StringSchema) schema).getDefault(), pathName);
           validateValues(((StringSchema) schema).getDefault(), parameter);
         }
         ((StringSchema) schema).getEnum()
-            .forEach(enumParam -> validateExpandParam(graphQlField, enumParam, pathName));
+            .forEach(enumParam -> validateExpandParam(fieldName, enumParam, pathName));
         break;
       default:
-        throw invalidOpenApiConfigurationException(
+        throw illegalArgumentException(
             "Expand parameter '{}' can only be of type array or string for path '{}'", parameter.getName(), pathName);
-    }
-  }
-
-  @Override
-  public void validate(GraphQlField graphQlField, String fieldName, String pathName) {
-    Schema<?> propertySchema = getPropertySchema(graphQlField, fieldName, pathName);
-
-    if (propertySchema != null && isTransient(propertySchema)) {
-      return;
-    }
-
-    if (graphQlField.getFields()
-        .stream()
-        .noneMatch(field -> field.getName()
-            .equals(fieldName))) {
-      throw invalidOpenApiConfigurationException(
-          "No field with name '{}' was found on GraphQL field '{}' for path '{}'", fieldName, graphQlField.getName(),
-          pathName);
     }
   }
 
@@ -137,17 +118,9 @@ public class ExpandParamHandler extends DefaultParamHandler {
         .get(fieldName);
   }
 
-  private Schema<?> getPropertySchema(GraphQlField graphQlField, String fieldName, String pathName) {
-    Schema<?> schema = openApi.getComponents()
-        .getSchemas()
-        .get(graphQlField.getType());
-    if (schema == null) {
-      throw invalidOpenApiConfigurationException(
-          "No OAS schema found for GraphQlField '{}' with type '{}' in endpoint '{}'.", graphQlField.getName(),
-          graphQlField.getType(), pathName);
-    }
-
-    return getPropertySchema(schema, fieldName);
+  private Schema<?> getPropertySchema(String fieldName, String pathName) {
+   //TODO
+    return null;
   }
 
   @SuppressWarnings("rawtypes")
@@ -163,22 +136,8 @@ public class ExpandParamHandler extends DefaultParamHandler {
     throw illegalStateException("Composed Schema is empty!");
   }
 
-  private void validateExpandParam(GraphQlField graphQlField, String expandValue, String pathName) {
-    String[] pathParams = expandValue.split("\\.");
+  private void validateExpandParam(String fieldName, String expandValue, String pathName) {
 
-    validate(graphQlField, pathParams[0], pathName);
-
-    if (pathParams.length > 1) {
-      GraphQlField childField = graphQlField.getFields()
-          .stream()
-          .filter(field -> field.getName()
-              .equals(pathParams[0]))
-          .findFirst()
-          .orElseThrow(() -> invalidOpenApiConfigurationException(
-              "No field with name '{}' was found on GraphQL field '{}' for pathName '{}'", pathParams[0],
-              graphQlField.getName(), pathName));
-      validateExpandParam(childField, String.join(".", ArrayUtils.remove(pathParams, 0)), pathName);
-    }
   }
 
   @Override

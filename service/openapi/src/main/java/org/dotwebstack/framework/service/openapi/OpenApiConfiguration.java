@@ -1,13 +1,9 @@
 package org.dotwebstack.framework.service.openapi;
 
-import static org.dotwebstack.framework.core.helpers.ExceptionHelper.invalidConfigurationException;
-import static org.dotwebstack.framework.service.openapi.exception.OpenApiExceptionHelper.invalidOpenApiConfigurationException;
 import static org.dotwebstack.framework.service.openapi.helper.DwsExtensionHelper.isDwsOperation;
 import static org.springframework.web.reactive.function.server.RequestPredicates.OPTIONS;
 import static org.springframework.web.reactive.function.server.RequestPredicates.accept;
 
-import graphql.GraphQL;
-import graphql.schema.idl.TypeDefinitionRegistry;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.PathItem;
 import java.io.InputStream;
@@ -21,23 +17,18 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import lombok.NonNull;
 import org.apache.commons.jexl3.JexlEngine;
-import org.dotwebstack.framework.core.helpers.ResourceLoaderUtils;
-import org.dotwebstack.framework.core.jexl.JexlHelper;
-import org.dotwebstack.framework.core.mapping.ResponseMapper;
-import org.dotwebstack.framework.core.query.GraphQlField;
-import org.dotwebstack.framework.core.query.GraphQlFieldBuilder;
-import org.dotwebstack.framework.core.templating.TemplateResponseMapper;
+import org.dotwebstack.framework.service.openapi.fromcore.ResponseMapper;
+import org.dotwebstack.framework.service.openapi.graphql.GraphQLProxy;
 import org.dotwebstack.framework.service.openapi.handler.CoreRequestHandler;
 import org.dotwebstack.framework.service.openapi.handler.OpenApiRequestHandler;
 import org.dotwebstack.framework.service.openapi.handler.OptionsRequestHandler;
 import org.dotwebstack.framework.service.openapi.helper.DwsExtensionHelper;
-import org.dotwebstack.framework.service.openapi.helper.QueryFieldHelper;
+import org.dotwebstack.framework.service.openapi.jexl.JexlHelper;
 import org.dotwebstack.framework.service.openapi.mapping.EnvironmentProperties;
 import org.dotwebstack.framework.service.openapi.mapping.JsonResponseMapper;
 import org.dotwebstack.framework.service.openapi.param.ParamHandlerRouter;
 import org.dotwebstack.framework.service.openapi.requestbody.RequestBodyHandlerRouter;
 import org.dotwebstack.framework.service.openapi.response.RequestBodyContextBuilder;
-import org.dotwebstack.framework.service.openapi.response.ResponseContextValidator;
 import org.dotwebstack.framework.service.openapi.response.ResponseSchemaContext;
 import org.dotwebstack.framework.service.openapi.response.ResponseTemplate;
 import org.dotwebstack.framework.service.openapi.response.ResponseTemplateBuilder;
@@ -61,55 +52,33 @@ public class OpenApiConfiguration {
 
   private final InputStream openApiStream;
 
-  private final GraphQL graphQl;
-
   private final List<ResponseMapper> responseMappers;
 
   private final JsonResponseMapper jsonResponseMapper;
 
-  private final List<TemplateResponseMapper> templateResponseMappers;
-
   private final ParamHandlerRouter paramHandlerRouter;
 
-  private final ResponseContextValidator responseContextValidator;
-
   private final RequestBodyHandlerRouter requestBodyHandlerRouter;
-
-  private final JexlHelper jexlHelper;
-
-  private final QueryFieldHelper queryFieldHelper;
 
   private final OpenApiProperties openApiProperties;
 
   private final EnvironmentProperties environmentProperties;
 
-  public OpenApiConfiguration(OpenAPI openApi, GraphQL graphQl, TypeDefinitionRegistry typeDefinitionRegistry,
-      List<ResponseMapper> responseMappers, JsonResponseMapper jsonResponseMapper,
-      ParamHandlerRouter paramHandlerRouter, InputStream openApiStream,
-      List<TemplateResponseMapper> templateResponseMappers, ResponseContextValidator responseContextValidator,
-      RequestBodyHandlerRouter requestBodyHandlerRouter, OpenApiProperties openApiProperties, JexlEngine jexlEngine,
-      EnvironmentProperties environmentProperties) {
+  private final GraphQLProxy graphQLProxy;
+
+  public OpenApiConfiguration(OpenAPI openApi, List<ResponseMapper> responseMappers, JsonResponseMapper jsonResponseMapper,
+                              ParamHandlerRouter paramHandlerRouter, InputStream openApiStream,
+                              RequestBodyHandlerRouter requestBodyHandlerRouter, OpenApiProperties openApiProperties,
+                              EnvironmentProperties environmentProperties, GraphQLProxy graphQLProxy) {
     this.openApi = openApi;
-    this.graphQl = graphQl;
     this.paramHandlerRouter = paramHandlerRouter;
     this.responseMappers = responseMappers;
     this.jsonResponseMapper = jsonResponseMapper;
-    this.templateResponseMappers = templateResponseMappers;
-    this.responseContextValidator = responseContextValidator;
-    this.queryFieldHelper = QueryFieldHelper.builder()
-        .typeDefinitionRegistry(typeDefinitionRegistry)
-        .graphQlFieldBuilder(new GraphQlFieldBuilder(typeDefinitionRegistry))
-        .build();
     this.openApiStream = openApiStream;
     this.requestBodyHandlerRouter = requestBodyHandlerRouter;
     this.openApiProperties = openApiProperties;
-    this.jexlHelper = new JexlHelper(jexlEngine);
     this.environmentProperties = environmentProperties;
-  }
-
-  Optional<RouterFunction<ServerResponse>> staticResourceRouter() {
-    return ResourceLoaderUtils.getResource(STATIC_ASSETS_LOCATION)
-        .map(staticResource -> RouterFunctions.resources("/" + STATIC_ASSETS_LOCATION + "**", staticResource));
+    this.graphQLProxy = graphQLProxy;
   }
 
   public static class HttpAdviceTrait implements org.zalando.problem.spring.webflux.advice.http.HttpAdviceTrait {
@@ -124,8 +93,6 @@ public class OpenApiConfiguration {
   @Bean
   public RouterFunction<ServerResponse> route(@NonNull OpenAPI openApi) {
     RouterFunctions.Builder routerFunctions = RouterFunctions.route();
-
-    staticResourceRouter().ifPresent(routerFunctions::add);
 
     var responseTemplateBuilder = ResponseTemplateBuilder.builder()
         .openApi(openApi)
@@ -191,11 +158,10 @@ public class OpenApiConfiguration {
 
     List<ResponseTemplate> responseTemplates = responseTemplateBuilder.buildResponseTemplates(httpMethodOperation);
 
-    Optional<GraphQlField> graphQlField = queryFieldHelper.resolveGraphQlField(httpMethodOperation.getOperation());
     List<String> requiredFields = DwsExtensionHelper.getDwsRequiredFields(httpMethodOperation.getOperation());
 
     var responseSchemaContext = ResponseSchemaContext.builder()
-        .graphQlField(graphQlField.orElse(null))
+        .fieldName("TODO")
         .requiredFields(Objects.nonNull(requiredFields) ? requiredFields : Collections.emptyList())
         .responses(responseTemplates)
         .parameters(httpMethodOperation.getOperation()
@@ -208,43 +174,12 @@ public class OpenApiConfiguration {
     var requestPredicate = RequestPredicates.method(httpMethodOperation.getHttpMethod())
         .and(RequestPredicates.path(httpMethodOperation.getName()));
 
-    validateTemplateResponseMapper(responseTemplates);
-    var templateResponseMapper = getTemplateResponseMapper();
-
-    var coreRequestHandler = new CoreRequestHandler(openApi, httpMethodOperation.getName(), responseSchemaContext,
-        responseContextValidator, graphQl, responseMappers, jsonResponseMapper, templateResponseMapper,
-        paramHandlerRouter, requestBodyHandlerRouter, jexlHelper, environmentProperties);
-
-    responseTemplates.stream()
-        .map(ResponseTemplate::getResponseCode)
-        .map(HttpStatus::valueOf)
-        .filter(httpStatus -> !httpStatus.is3xxRedirection())
-        .findFirst()
-        .ifPresent(i -> coreRequestHandler.validateSchema());
+    var coreRequestHandler = new CoreRequestHandler(openApi, graphQLProxy, httpMethodOperation.getName(), responseSchemaContext,
+         responseMappers, jsonResponseMapper, paramHandlerRouter, requestBodyHandlerRouter, environmentProperties);
 
     return RouterFunctions.route(requestPredicate, coreRequestHandler);
   }
 
-  private TemplateResponseMapper getTemplateResponseMapper() {
-    if (templateResponseMappers.isEmpty()) {
-      return null;
-    }
-    return templateResponseMappers.get(0);
-  }
-
-  private void validateTemplateResponseMapper(List<ResponseTemplate> responseTemplates) {
-    boolean usesTemplating = responseTemplates.stream()
-        .anyMatch(ResponseTemplate::usesTemplating);
-
-    if (usesTemplating && templateResponseMappers.isEmpty()) {
-      throw invalidOpenApiConfigurationException("Configured a template, but templating module not used");
-    }
-
-    int size = templateResponseMappers.size();
-    if (size > 1) {
-      throw invalidConfigurationException("More than 1 templateResponseMapper configured, found: {}", size);
-    }
-  }
 
   protected Optional<RouterFunction<ServerResponse>> toOptionRouterFunction(
       List<HttpMethodOperation> httpMethodOperations) {

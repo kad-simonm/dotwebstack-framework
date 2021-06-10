@@ -1,6 +1,6 @@
 package org.dotwebstack.framework.service.openapi.helper;
 
-import static org.dotwebstack.framework.service.openapi.exception.ExceptionHelper.illegalStateException;
+import static org.dotwebstack.framework.service.openapi.fromcore.ExceptionHelper.illegalStateException;
 
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.media.Schema;

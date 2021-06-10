@@ -16,14 +16,12 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import lombok.NonNull;
-import org.apache.commons.jexl3.JexlEngine;
 import org.dotwebstack.framework.service.openapi.fromcore.ResponseMapper;
-import org.dotwebstack.framework.service.openapi.graphql.GraphQLProxy;
+import org.dotwebstack.framework.service.openapi.graphql.GraphQlProxy;
 import org.dotwebstack.framework.service.openapi.handler.CoreRequestHandler;
 import org.dotwebstack.framework.service.openapi.handler.OpenApiRequestHandler;
 import org.dotwebstack.framework.service.openapi.handler.OptionsRequestHandler;
 import org.dotwebstack.framework.service.openapi.helper.DwsExtensionHelper;
-import org.dotwebstack.framework.service.openapi.jexl.JexlHelper;
 import org.dotwebstack.framework.service.openapi.mapping.EnvironmentProperties;
 import org.dotwebstack.framework.service.openapi.mapping.JsonResponseMapper;
 import org.dotwebstack.framework.service.openapi.param.ParamHandlerRouter;
@@ -35,7 +33,6 @@ import org.dotwebstack.framework.service.openapi.response.ResponseTemplateBuilde
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.reactive.function.server.RequestPredicate;
 import org.springframework.web.reactive.function.server.RequestPredicates;
@@ -64,12 +61,12 @@ public class OpenApiConfiguration {
 
   private final EnvironmentProperties environmentProperties;
 
-  private final GraphQLProxy graphQLProxy;
+  private final GraphQlProxy graphQlProxy;
 
-  public OpenApiConfiguration(OpenAPI openApi, List<ResponseMapper> responseMappers, JsonResponseMapper jsonResponseMapper,
-                              ParamHandlerRouter paramHandlerRouter, InputStream openApiStream,
-                              RequestBodyHandlerRouter requestBodyHandlerRouter, OpenApiProperties openApiProperties,
-                              EnvironmentProperties environmentProperties, GraphQLProxy graphQLProxy) {
+  public OpenApiConfiguration(OpenAPI openApi, List<ResponseMapper> responseMappers,
+      JsonResponseMapper jsonResponseMapper, ParamHandlerRouter paramHandlerRouter, InputStream openApiStream,
+      RequestBodyHandlerRouter requestBodyHandlerRouter, OpenApiProperties openApiProperties,
+      EnvironmentProperties environmentProperties, GraphQlProxy graphQlProxy) {
     this.openApi = openApi;
     this.paramHandlerRouter = paramHandlerRouter;
     this.responseMappers = responseMappers;
@@ -78,7 +75,7 @@ public class OpenApiConfiguration {
     this.requestBodyHandlerRouter = requestBodyHandlerRouter;
     this.openApiProperties = openApiProperties;
     this.environmentProperties = environmentProperties;
-    this.graphQLProxy = graphQLProxy;
+    this.graphQlProxy = graphQlProxy;
   }
 
   public static class HttpAdviceTrait implements org.zalando.problem.spring.webflux.advice.http.HttpAdviceTrait {
@@ -174,8 +171,9 @@ public class OpenApiConfiguration {
     var requestPredicate = RequestPredicates.method(httpMethodOperation.getHttpMethod())
         .and(RequestPredicates.path(httpMethodOperation.getName()));
 
-    var coreRequestHandler = new CoreRequestHandler(openApi, graphQLProxy, httpMethodOperation.getName(), responseSchemaContext,
-         responseMappers, jsonResponseMapper, paramHandlerRouter, requestBodyHandlerRouter, environmentProperties);
+    var coreRequestHandler =
+        new CoreRequestHandler(openApi, graphQlProxy, httpMethodOperation.getName(), responseSchemaContext,
+            responseMappers, jsonResponseMapper, paramHandlerRouter, requestBodyHandlerRouter, environmentProperties);
 
     return RouterFunctions.route(requestPredicate, coreRequestHandler);
   }

@@ -13,7 +13,7 @@ import static org.dotwebstack.framework.service.openapi.helper.OasConstants.STRI
 import java.util.List;
 import java.util.Objects;
 import lombok.NonNull;
-import org.dotwebstack.framework.service.openapi.exception.ExceptionHelper;
+import org.dotwebstack.framework.service.openapi.fromcore.ExceptionHelper;
 
 public class TypeValidator {
 

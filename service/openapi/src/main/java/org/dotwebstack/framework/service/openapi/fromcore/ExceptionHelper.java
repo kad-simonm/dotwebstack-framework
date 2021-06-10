@@ -1,4 +1,4 @@
-package org.dotwebstack.framework.service.openapi.exception;
+package org.dotwebstack.framework.service.openapi.fromcore;
 
 import java.util.MissingFormatArgumentException;
 

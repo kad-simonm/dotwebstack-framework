@@ -33,7 +33,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.dotwebstack.framework.service.openapi.exception.BadRequestException;
 import org.dotwebstack.framework.service.openapi.exception.GraphQlErrorException;
 import org.dotwebstack.framework.service.openapi.fromcore.ResponseMapper;
-import org.dotwebstack.framework.service.openapi.graphql.GraphQLProxy;
+import org.dotwebstack.framework.service.openapi.graphql.GraphQlProxy;
 import org.dotwebstack.framework.service.openapi.helper.SchemaResolver;
 import org.dotwebstack.framework.service.openapi.mapping.EnvironmentProperties;
 import org.dotwebstack.framework.service.openapi.mapping.JsonResponseMapper;
@@ -64,7 +64,7 @@ public class CoreRequestHandler implements HandlerFunction<ServerResponse> {
 
   private final OpenAPI openApi;
 
-  private final GraphQLProxy graphQLProxy;
+  private final GraphQlProxy graphQlProxy;
 
   private final ResponseSchemaContext responseSchemaContext;
 
@@ -80,13 +80,12 @@ public class CoreRequestHandler implements HandlerFunction<ServerResponse> {
 
   private final EnvironmentProperties properties;
 
-  public CoreRequestHandler(OpenAPI openApi, GraphQLProxy graphQLProxy, String pathName, ResponseSchemaContext responseSchemaContext,
-                             List<ResponseMapper> responseMappers,
-                            JsonResponseMapper jsonResponseMapper,
-                            ParamHandlerRouter paramHandlerRouter, RequestBodyHandlerRouter requestBodyHandlerRouter,
-                            EnvironmentProperties properties) {
+  public CoreRequestHandler(OpenAPI openApi, GraphQlProxy graphQlProxy, String pathName,
+      ResponseSchemaContext responseSchemaContext, List<ResponseMapper> responseMappers,
+      JsonResponseMapper jsonResponseMapper, ParamHandlerRouter paramHandlerRouter,
+      RequestBodyHandlerRouter requestBodyHandlerRouter, EnvironmentProperties properties) {
     this.openApi = openApi;
-    this.graphQLProxy = graphQLProxy;
+    this.graphQlProxy = graphQlProxy;
     this.pathName = pathName;
     this.responseSchemaContext = responseSchemaContext;
     this.responseMappers = responseMappers;
@@ -136,7 +135,7 @@ public class CoreRequestHandler implements HandlerFunction<ServerResponse> {
           .build();
 
 
-      return graphQLProxy.execute(executionInput);
+      return graphQlProxy.execute(executionInput);
     })
         .orElse(new ExecutionResultImpl(new HashMap<String, Object>(), emptyList()));
 
@@ -161,7 +160,7 @@ public class CoreRequestHandler implements HandlerFunction<ServerResponse> {
 
       String body;
 
-        body = getResponseMapperBody(request, inputParams, queryResultData, template);
+      body = getResponseMapperBody(request, inputParams, queryResultData, template);
 
       if (Objects.isNull(body)) {
         throw noContentException("No content found.");

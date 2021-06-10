@@ -1,5 +1,6 @@
 package org.dotwebstack.framework.service.openapi.exception;
 
+import org.dotwebstack.framework.service.openapi.fromcore.ExceptionHelper;
 import org.dotwebstack.framework.service.openapi.mapping.MappingException;
 
 public class OpenApiExceptionHelper extends ExceptionHelper {

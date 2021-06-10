@@ -7,7 +7,7 @@ import io.swagger.v3.oas.models.parameters.RequestBody;
 import java.util.Map;
 import java.util.Objects;
 import lombok.NonNull;
-import org.dotwebstack.framework.service.openapi.exception.ExceptionHelper;
+import org.dotwebstack.framework.service.openapi.fromcore.ExceptionHelper;
 
 public class RequestBodyResolver {
 

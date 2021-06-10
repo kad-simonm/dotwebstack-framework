@@ -1,9 +1,9 @@
-package org.dotwebstack.framework.service.openapi.jexl;
+package org.dotwebstack.framework.service.openapi.fromcore.jexl;
+
+import static org.dotwebstack.framework.service.openapi.fromcore.ExceptionHelper.illegalArgumentException;
 
 import java.util.List;
 import java.util.Map;
-
-import static org.dotwebstack.framework.service.openapi.exception.ExceptionHelper.illegalArgumentException;
 
 public class ObjectHelper {
 

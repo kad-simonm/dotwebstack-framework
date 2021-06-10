@@ -1,6 +1,6 @@
 package org.dotwebstack.framework.service.openapi.response;
 
-import static org.dotwebstack.framework.service.openapi.exception.ExceptionHelper.illegalArgumentException;
+import static org.dotwebstack.framework.service.openapi.fromcore.ExceptionHelper.illegalArgumentException;
 import static org.dotwebstack.framework.service.openapi.helper.DwsExtensionHelper.getDwsExtension;
 import static org.dotwebstack.framework.service.openapi.helper.DwsExtensionHelper.getDwsQueryName;
 import static org.dotwebstack.framework.service.openapi.helper.DwsExtensionHelper.getDwsType;
@@ -31,7 +31,6 @@ import java.util.stream.Collectors;
 import lombok.Builder;
 import lombok.NonNull;
 import org.dotwebstack.framework.service.openapi.HttpMethodOperation;
-import org.dotwebstack.framework.service.openapi.exception.ExceptionHelper;
 import org.dotwebstack.framework.service.openapi.helper.DwsExtensionHelper;
 import org.dotwebstack.framework.service.openapi.helper.OasConstants;
 
@@ -387,8 +386,7 @@ public class ResponseTemplateBuilder {
     }
 
     if (!(result instanceof Map) || !((Map) result).containsKey(X_DWS_EXPR_VALUE)) {
-      throw illegalArgumentException("Extension '{}' should contain a key named '{}'.", X_DWS_EXPR,
-          X_DWS_EXPR_VALUE);
+      throw illegalArgumentException("Extension '{}' should contain a key named '{}'.", X_DWS_EXPR, X_DWS_EXPR_VALUE);
     }
 
     return (Map) result;

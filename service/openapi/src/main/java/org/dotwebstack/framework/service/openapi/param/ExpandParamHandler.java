@@ -1,8 +1,7 @@
 package org.dotwebstack.framework.service.openapi.param;
 
-import static org.dotwebstack.framework.service.openapi.exception.ExceptionHelper.illegalArgumentException;
-import static org.dotwebstack.framework.service.openapi.exception.ExceptionHelper.illegalStateException;
-import static org.dotwebstack.framework.service.openapi.helper.DwsExtensionHelper.isTransient;
+import static org.dotwebstack.framework.service.openapi.fromcore.ExceptionHelper.illegalArgumentException;
+import static org.dotwebstack.framework.service.openapi.fromcore.ExceptionHelper.illegalStateException;
 import static org.dotwebstack.framework.service.openapi.helper.DwsExtensionHelper.supportsDwsType;
 import static org.dotwebstack.framework.service.openapi.helper.OasConstants.ARRAY_TYPE;
 import static org.dotwebstack.framework.service.openapi.helper.OasConstants.STRING_TYPE;
@@ -25,7 +24,6 @@ import java.util.Optional;
 import java.util.StringJoiner;
 import java.util.stream.Stream;
 import lombok.NonNull;
-import org.apache.commons.lang3.ArrayUtils;
 import org.dotwebstack.framework.service.openapi.helper.DwsExtensionHelper;
 import org.dotwebstack.framework.service.openapi.helper.JsonNodeUtils;
 import org.dotwebstack.framework.service.openapi.response.ResponseSchemaContext;
@@ -96,8 +94,8 @@ public class ExpandParamHandler extends DefaultParamHandler {
             .forEach(enumParam -> validateExpandParam(fieldName, enumParam, pathName));
         break;
       default:
-        throw illegalArgumentException(
-            "Expand parameter '{}' can only be of type array or string for path '{}'", parameter.getName(), pathName);
+        throw illegalArgumentException("Expand parameter '{}' can only be of type array or string for path '{}'",
+            parameter.getName(), pathName);
     }
   }
 
@@ -119,7 +117,7 @@ public class ExpandParamHandler extends DefaultParamHandler {
   }
 
   private Schema<?> getPropertySchema(String fieldName, String pathName) {
-   //TODO
+    // TODO
     return null;
   }
 

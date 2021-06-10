@@ -1,11 +1,11 @@
 package org.dotwebstack.framework.service.openapi.response;
 
+import static org.dotwebstack.framework.service.openapi.fromcore.ExceptionHelper.illegalArgumentException;
+
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.parameters.RequestBody;
 import java.util.Objects;
 import org.dotwebstack.framework.service.openapi.helper.RequestBodyResolver;
-
-import static org.dotwebstack.framework.service.openapi.exception.ExceptionHelper.illegalArgumentException;
 
 public class RequestBodyContextBuilder {
 

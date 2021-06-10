@@ -25,6 +25,7 @@ import reactor.core.publisher.Mono;
 
 @ExtendWith(SpringExtension.class)
 @AutoConfigureWebTestClient
+@Disabled
 @SpringBootTest(classes = TestApplication.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class OpenApiRdf4jIntegrationTest {
 

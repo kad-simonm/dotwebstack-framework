@@ -1,7 +1,12 @@
-package org.dotwebstack.framework.service.openapi.jexl;
+package org.dotwebstack.framework.service.openapi.fromcore.jexl;
 
-import graphql.schema.GraphQLDirective;
+import static org.dotwebstack.framework.service.openapi.fromcore.ExceptionHelper.illegalArgumentException;
+import static org.dotwebstack.framework.service.openapi.fromcore.jexl.ObjectHelper.cast;
+
 import graphql.schema.GraphQLFieldDefinition;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.jexl3.JexlContext;
@@ -9,13 +14,6 @@ import org.apache.commons.jexl3.JexlEngine;
 import org.apache.commons.jexl3.JexlExpression;
 import org.apache.commons.jexl3.JexlScript;
 import org.apache.commons.jexl3.MapContext;
-
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-
-import static org.dotwebstack.framework.service.openapi.exception.ExceptionHelper.illegalArgumentException;
-import static org.dotwebstack.framework.service.openapi.jexl.ObjectHelper.cast;
 
 
 @Slf4j

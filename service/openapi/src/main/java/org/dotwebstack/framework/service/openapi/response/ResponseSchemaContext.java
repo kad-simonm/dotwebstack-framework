@@ -29,6 +29,10 @@ public class ResponseSchemaContext {
   private final String fieldName;
 
   public ResponseTemplate getOkResponse() {
-    return this.getResponses().stream().filter(r->r.getResponseCode()==200).findFirst().orElseThrow();
+    return this.getResponses()
+        .stream()
+        .filter(r -> r.getResponseCode() == 200)
+        .findFirst()
+        .orElseThrow();
   }
 }

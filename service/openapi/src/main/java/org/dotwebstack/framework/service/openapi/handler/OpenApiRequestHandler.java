@@ -25,8 +25,7 @@ public class OpenApiRequestHandler implements HandlerFunction<ServerResponse> {
       openApiSpec = mapper.writer()
           .writeValueAsString(specNode);
     } catch (IOException e) {
-      throw new RuntimeException("An unexpected error occurred while parsing the OpenApi Specification: {}",
-          e);
+      throw new RuntimeException("An unexpected error occurred while parsing the OpenApi Specification: {}", e);
     }
   }
 

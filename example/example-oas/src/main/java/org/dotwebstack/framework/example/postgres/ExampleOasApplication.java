@@ -6,9 +6,9 @@ import org.springframework.context.annotation.ComponentScan;
 
 @SpringBootApplication
 @ComponentScan("org.dotwebstack.framework")
-public class ExampleOASApplication {
+public class ExampleOasApplication {
 
   public static void main(String[] args) {
-    SpringApplication.run(ExampleOASApplication.class, args);
+    SpringApplication.run(ExampleOasApplication.class, args);
   }
 }

@@ -97,8 +97,8 @@ public class ResponseWriteContextHelper {
       }
     }
 
-    return createNewResponseWriteContext(parentContext.getFieldName(), childSchema, data,
-        parentContext.getParameters(), dataStack, parentContext.getUri());
+    return createNewResponseWriteContext(parentContext.getFieldName(), childSchema, data, parentContext.getParameters(),
+        dataStack, parentContext.getUri());
   }
 
   public static ResponseWriteContext copyResponseContext(@NonNull ResponseWriteContext parentContext,

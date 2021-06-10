@@ -1,8 +1,8 @@
 package org.dotwebstack.framework.service.openapi.requestbody;
 
 import static java.util.Collections.singletonList;
-import static org.dotwebstack.framework.service.openapi.exception.ExceptionHelper.illegalStateException;
 import static org.dotwebstack.framework.service.openapi.exception.OpenApiExceptionHelper.badRequestException;
+import static org.dotwebstack.framework.service.openapi.fromcore.ExceptionHelper.illegalStateException;
 import static org.dotwebstack.framework.service.openapi.helper.SchemaResolver.resolveSchema;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -11,11 +11,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import graphql.language.InputObjectTypeDefinition;
 import graphql.language.ListType;
 import graphql.language.Type;
-import graphql.language.TypeDefinition;
 import graphql.language.TypeName;
-import graphql.schema.idl.TypeDefinitionRegistry;
 import io.swagger.v3.oas.models.OpenAPI;
-import io.swagger.v3.oas.models.media.ArraySchema;
 import io.swagger.v3.oas.models.media.Schema;
 import io.swagger.v3.oas.models.parameters.RequestBody;
 import java.util.Collections;
@@ -47,7 +44,7 @@ public class DefaultRequestBodyHandler implements RequestBodyHandler {
   private final ObjectMapper objectMapper;
 
   public DefaultRequestBodyHandler(@NonNull OpenAPI openApi,
-                                   @Qualifier("default") @NonNull Jackson2ObjectMapperBuilder jackson2ObjectMapperBuilder) {
+      @Qualifier("default") @NonNull Jackson2ObjectMapperBuilder jackson2ObjectMapperBuilder) {
     this.openApi = openApi;
     this.typeValidator = new TypeValidator();
     this.objectMapper = jackson2ObjectMapperBuilder.build();

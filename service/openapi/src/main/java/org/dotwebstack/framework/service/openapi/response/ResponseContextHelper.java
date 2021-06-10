@@ -11,20 +11,16 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.StringJoiner;
-import java.util.stream.Collectors;
-
 import lombok.NonNull;
-import org.dotwebstack.framework.service.openapi.exception.ExceptionHelper;
+import org.dotwebstack.framework.service.openapi.fromcore.ExceptionHelper;
 import org.dotwebstack.framework.service.openapi.helper.OasConstants;
-import org.dotwebstack.framework.service.openapi.query.Field;
 
 public class ResponseContextHelper {
 
-  private ResponseContextHelper() {
-  }
+  private ResponseContextHelper() {}
 
   public static Set<String> getPathsForSuccessResponse(@NonNull ResponseSchemaContext responseSchemaContext,
-                                                       @NonNull Map<String, Object> inputParams) {
+      @NonNull Map<String, Object> inputParams) {
     Optional<ResponseTemplate> successResponse = responseSchemaContext.getResponses()
         .stream()
         .filter(template -> template.isApplicable(200, 299) || template.isApplicable(300, 303))
@@ -42,7 +38,7 @@ public class ResponseContextHelper {
   }
 
   private static Set<String> getResponseObject(String graphQlField, Map<String, Object> inputParams,
-                                               ResponseTemplate responseTemplate) {
+      ResponseTemplate responseTemplate) {
     var responseObject = responseTemplate.getResponseObject();
 
     if (responseObject == null) {
@@ -53,7 +49,7 @@ public class ResponseContextHelper {
   }
 
   static Map<String, SchemaSummary> getRequiredResponseObject(String prefix, ResponseObject responseObject,
-                                                              Map<String, Object> inputParams) {
+      Map<String, Object> inputParams) {
     Map<String, SchemaSummary> responseObjects = new HashMap<>();
     var joiner = getStringJoiner(prefix);
     SchemaSummary summary = responseObject.getSummary();
@@ -66,7 +62,7 @@ public class ResponseContextHelper {
   }
 
   private static void addPrefixToPath(SchemaSummary summary, ResponseObject responseObject, StringJoiner joiner,
-                                      Map<String, SchemaSummary> responseObjects, boolean isExpanded) {
+      Map<String, SchemaSummary> responseObjects, boolean isExpanded) {
     /*
      * Based on the required fields from the OAS resposne a GraphQL query is constructed. Some fields
      * however do only exist in OAS and not in GraphQL. To deal with this properly, the following rules
@@ -105,7 +101,7 @@ public class ResponseContextHelper {
       if (!parent.getSummary()
           .isTransient()
           && !Objects.equals(OasConstants.ARRAY_TYPE, parent.getSummary()
-          .getType())) {
+              .getType())) {
         return false;
       }
       parent = parent.getParent();
@@ -114,9 +110,8 @@ public class ResponseContextHelper {
     return true;
   }
 
-  private static void handleSubSchemas(Map<String, Object> inputParams,
-                                       Map<String, SchemaSummary> responseObjects, StringJoiner joiner,
-                                       ResponseObject responseObject) {
+  private static void handleSubSchemas(Map<String, Object> inputParams, Map<String, SchemaSummary> responseObjects,
+      StringJoiner joiner, ResponseObject responseObject) {
 
     var prefix = joiner.toString();
     List<ResponseObject> subSchemas;
@@ -139,8 +134,7 @@ public class ResponseContextHelper {
   }
 
   private static void extractResponseObjects(String prefix, List<ResponseObject> children,
-                                             Map<String, Object> inputParams,
-                                             Map<String, SchemaSummary> responseObjects) {
+      Map<String, Object> inputParams, Map<String, SchemaSummary> responseObjects) {
     children.stream()
         .flatMap(child -> getRequiredResponseObject(prefix, child, inputParams).entrySet()
             .stream())

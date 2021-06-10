@@ -1,0 +1,851 @@
+---
+openapi: 3.0.3
+info:
+  title: Ruimtelijke Plannen API
+  version: 4.0.0
+  description: |-
+    De Ruimtelijke Plannen API is een aanvullende dienst ten opzichte van de diensten die Ruimtelijkeplannen.nl
+    aanbiedt. De verantwoordelijkheid voor de Ruimtelijke Plannen API ligt bij Informatiehuis Ruimte. Tot de doelgroep
+    van de Ruimtelijke Plannen API behoren de in ruimtelijke plannen geïnteresseerde personen met een sterke focus op
+    de professionals. Van professionele gebruikers valt te verwachten dat deze deels vragen hebben die in een ruimere
+    context gesteld moeten worden dan alleen ruimtelijke plannen. De Ruimtelijke Plannen API ontsluit echter alleen
+    ruimtelijke plannen en geen informatie van andere thema’s. Voor de transformatie van coördinaten maken we gebruik
+    van RDNAPTRANS.
+    Professionele gebruikers kunnen gebruik maken van de Ruimtelijke Plannen API van Informatiehuis Ruimte om
+    ruimtelijke plannen op te halen en deze binnen hun eigen informatiehuishouding te combineren met andere
+    gegevensdiensten of lokale (geo-)informatie. Dat is dan ook de plek om functionaliteit aan te bieden voor complexe
+    vragen. Te denken valt daarbij aan de combinatie van ruimtelijke plannen met thematische (geo-)informatie als
+    waterkansenkaart, geluidscontouren, etc.
+    Kortom de Ruimtelijke Plannen API is bedoeld voor geavanceerde en/of proces specifieke toepassingen, binnen de
+    eigen informatiehuishouding. Het is alleen mogelijk informatie met betrekking tot de ruimtelijke plannen af te
+    nemen en niet de onderliggende topografie en luchtfoto’s.
+  contact:
+    name: Kadaster
+    url: 'https://aandeslagmetdeomgevingswet.nl/contact/'
+externalDocs:
+  description: Ontwikkelaarsportaal Omgevingswet
+  url: 'https://aandeslagmetdeomgevingswet.nl/ontwikkelaarsportaal/api-register/api/rp-opvragen/'
+servers:
+  - url: 'https://ruimte.omgevingswet.overheid.nl/ruimtelijke-plannen/api/opvragen/v4'
+tags:
+  - name: Globale zoekfunctie
+    description: >-
+      Geografisch zoeken op alle objecten met een geometrie (teksten vallen hierbuiten).
+  - name: Plannen
+    description: >-
+      De digitale plannen, visies en besluiten voor de ruimtelijke ordening (omgevingsinstrumenten). Het gaat hierbij
+      om instrumenten zoals die voor de ruimtelijke ordening in de Wro en Wabo  gedefinieerd zijn en op de
+      verschillende administratieve niveaus gemaakt worden: gemeentelijk, provinciaal en nationaal. Een plan
+      beschrijft regels die geldig zijn voor een bepaald gebied.
+  - name: Teksten
+    description: >-
+      Zelfstandig leesbaar stuk tekst met een titel, dat begint met een hoofdletter en eindigt met een punt. De tekst
+      is samengesteld uit één of meerdere TekstObjecten, een stuk tekst met een titel. Te denken valt aan
+      objectgerichte planteksten, de regels, de toelichting en/of het beleids-/besluitdocument en bijlagen.
+  - name: Bestemmingsvlakken
+    description: >-
+      Gebied waar een bestemming aan toegekend is. Een bestemmingsvlak is het belangrijkste planobject in een
+      bestemmingsplan. Aan het bestemmingsvlak is de bestemming gekoppeld. Er moet een keuze gemaakt worden uit twee
+      subklassen van de klasse bestemmingsvlak: Enkelbestemming: Bestemming die van toepassing is op een gebied.
+      Dubbelbestemming: Een bestemming die (een) andere bestemming(en) willekeurig overlapt.
+  - name: Bouwvlakken
+    description: >-
+      Een gebied binnen een bestemming waarbinnen volgens de voorschriften de mogelijkheden voor bouwen nader worden
+      benoemd. Bijna ieder bestemmingsplan zal bouwvlakken kennen. Bouwvlakken behoren altijd bij een bestemming,
+      waardoor te allen tijde een directe relatie aanwezig is tussen het object bouwvlak en het object bestemmingsvlak.
+      Bouwvlak verwijst altijd naar een bestemmingsvlak maar is optioneel bij plantype wijzigingsplan, inpassingsplan
+      of indien het dient ter vervanging van een extern plan.
+  - name: Functieaanduidingen
+    description: >-
+      Specificatie van de gebruiksmogelijkheden binnen een bestemming of een gedeelte daarvan. Zo kan worden
+      aangegeven dat ter plaatse alleen een bepaalde, met name genoemde functie is toegestaan of juist is uitgesloten.
+      Functieaanduidingen kunnen ook worden gebruikt om op een bepaalde locatie een specifieke, niet bij de bestemming
+      passende, functie toe te laten of om functies binnen een bestemming in boven elkaar gestapelde lagen mogelijk te
+      maken. Aanduidingen verwijzen in bijna alle gevallen naar een ander object waar ze nadere informatie over
+      bevatten. Soms omvat een object Aanduiding hetzelfde gebied als het object waarnaar verwezen wordt en soms een
+      gedeelte van dat gebied. Functieaanduiding kan niet verwijzen naar aanduiding van het type bouwvlak,
+      functieaanduiding, bouwaanduiding, maatvoering, figuur. Functieaanduiding verwijst altijd naar een
+      bestemmingsvlak of een gebiedsaanduiding maar is optioneel bij plantype wijzigingsplan en inpassingsplan of
+      indien het dient ter vervanging van een extern plan.
+  - name: Bouwaanduidingen
+    description: >-
+      Aanduiding met betrekking tot de wijze van bouwen, dan wel de verschijningsvorm van bouwwerken. Aanduidingen
+      verwijzen in bijna alle gevallen naar een ander object waar ze nadere informatie over bevatten. Soms omvat een
+      object Aanduiding hetzelfde gebied als het object waarnaar verwezen wordt en soms een gedeelte van dat gebied.
+      Bouwaanduiding kan niet verwijzen naar aanduiding van het type functieaanduiding, bouwaanduiding, maatvoering,
+      figuur. Bouwaanduiding verwijst altijd naar een bestemmingsvlak, bouwvlak of een gebiedsaanduiding maar is
+      optioneel bij plantype wijzigingsplan en inpassingsplan of indien het dient ter vervanging van een extern plan.
+  - name: Lettertekenaanduidingen
+    description: >-
+      Een object voor specificatie van een onderliggend object of gedeelte daarvan. Lettertekenaanduidingen geven een
+      nadere specificatie van gerelateerd object. De geometrie van het object Lettertekenaanduiding is de ruimtelijke
+      representatie van het gebied waarvoor de specificatie geldt. In de meeste gevallen zal dit een vlak zijn.
+  - name: Maatvoeringen
+    description: >-
+      Gebied waaraan gekoppeld informatie over maatvoering. Aanduidingen verwijzen in bijna alle gevallen naar een
+      ander object waar ze nadere informatie over bevatten. Soms omvat een object Aanduiding hetzelfde gebied als het
+      object waarnaar verwezen wordt en soms een gedeelte van dat gebied. Maatvoering kan niet verwijzen naar
+      aanduiding van het type functieaanduiding, bouwaanduiding, maatvoering, figuur. Maatvoering verwijst altijd naar
+      een bestemmingsvlak , een bouwvlak of een gebiedsaanduiding maar is optioneel bij plantype wijzigingsplan en
+      inpassingsplan of indien het dient ter vervanging van een extern plan. Een object Maatvoering geeft een
+      maatvoering of een aantal maatvoeringen behorend bij een (gedeelte van) een ander object.  De geometrie van het
+      object maatvoering is de ruimtelijke representatie van het gebied waarvoor de maatvoering geldt. In alle
+      gevallen is dit een vlak. Een maatvoering of een set aan maatvoeringen kan op een analoge kaart afgebeeld
+      door middel van een matrixfiguur. De symboolcode kan gebruikt worden bij de keuze van het matrixfiguur. Bij een
+      object maatvoering kunnen meerdere verschillende matrixfiguren worden opgenomen. Het totaal aan matrixfiguren
+      verklaart de opgenomen maatvoeringen.
+  - name: Figuren
+    description: >-
+      Aanduiding in de vorm van een figuur. Aanduidingen verwijzen in bijna alle gevallen naar een ander object waar
+      ze nadere informatie over bevatten. Soms omvat een object Aanduiding hetzelfde gebied als het object waarnaar
+      verwezen wordt en soms een gedeelte van dat gebied. Figuur kan niet verwijzen naar aanduiding van het type
+      functieaanduiding, bouwaanduiding, maatvoering, figuur. Figuur verwijst altijd naar een bestemmingsvlak of een
+      bouwvlak of een gebiedsaanduiding maar is optioneel bij plantype wijzigingsplan en inpassingsplan of indien het
+      dient ter vervanging van een extern plan. In een bestemmingsplan kunnen 'getekende' figuren voorkomen zoals
+      relatiepijlen, hartlijnen van leidingen, aanduidingen voor dwarsprofielen en dergelijke, die nodig zijn om de
+      planteksten te kunnen hanteren. Deze figuren vallen onder de klasse Figuur. Voor deze figuren is een lijst van
+      te gebruiken figuren opgenomen. Voor de geometrie van de figuren wordt de lijn opgenomen die de locatie van het
+      figuur representeert. Voor de verbeelding van de lijnen zijn in de SVBP2012 regels opgenomen. Bij het figuur
+      dwarsprofiel moet het figuur inclusief de pijlpunt gedigitaliseerd en uitgewisseld worden.
+  - name: Gebiedsaanduidingen
+    description: >-
+      Benoemd gebied waar bijzondere regels, extra regels of nadere afwegingen gelden. Voorbeelden van objecten uit de
+      klasse Gebiedsaanduiding zijn: geluidzones, veiligheidszones, vrijwaringszones. Aanduidingen verwijzen in bijna
+      alle gevallen naar een ander object waar ze nadere informatie over bevatten. Soms omvat een object Aanduiding
+      hetzelfde gebied als het object waarnaar verwezen wordt en soms een gedeelte van dat gebied. Een
+      gebiedsaanduiding maakt daarop een uitzondering; deze kan over meerdere bestemming heen liggen.
+  - name: Structuurvisiegebieden
+    description: >-
+      Een gebied waarop één of meerdere beleidsuitspraken in het kader van een structuurvisie betrekking hebben.
+  - name: Structuurvisiecomplexen
+    description: >-
+      Een samenstelling van objecten Structuurvisiegebied (en of Structuurvisieverklaring bij een provincie) en of
+      andere Complexen binnen één structuurvisieplangebied, waarop één of meerdere beleidsuitspraken betrekking hebben
+      en waarbij op het niveau van de samenstellende delen (gebieden, verklaringen en/of andere complexen)
+      verschillende specifieke beleidsuitspraken gedaan moeten worden.
+  - name: Structuurvisieverklaringen
+    description: >-
+      Ruimtelijke eenheid waaraan geen beleid gekoppeld is maar die wel in de plankaart als toelichting of nadere
+      verklaring is opgenomen. Van toepassing bij Provinciale structuurvisie.
+  - name: Besluitvlakken
+    description: >-
+      Een gebied waarop één of meerdere besluiten betrekking hebben.
+  - name: Besluitsubvlakken
+    description: >-
+      Aanduiding van een gebied van een object Besluitvlak of en ander Besluitsubvlak waar een nadere betekenis of
+      specificatie aan gegeven wordt.
+  - name: Bekendmakingen
+    description: >-
+      De officiële overheidspublicaties zoals gepubliceerd in de Staatscourant en het Gemeenteblad.
+  - name: Gerelateerde plannen
+    description: >-
+      Een plan kan relaties hebben met andere plannen (relatiesMetExternePlannen). Voorbeelden hiervan zijn: vervangt,
+      muteert, tenGevolgeVan, gebruiktInformatieUit, gedeeltelijkeHerzieningVan, uitTeWerkenIn, uitgewerktIn.
+paths:
+  /plannen/{planId}:
+    get:
+      x-dws-query:
+        field: plan
+        requiredFields:
+          - heeftOnderdelen.heeftObjectgerichteTeksten.id
+          - tenGevolgeVan.id
+          - gedeeltelijkeHerzieningVan.id
+          - uitTeWerkenIn.id
+          - vervangt.id
+          - uitgewerktIn.id
+          - gebruiktInformatieUit.id
+          - muteert.id
+          - illustraties.href
+      summary: Een enkel plan opvragen
+      tags:
+        - Plannen
+      parameters:
+        - $ref: '#/components/parameters/pathPlanId'
+        - name: expand
+          x-dws-type: expand
+          in: query
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+              enum: [
+                  geometrie,
+                  bbox
+              ]
+      responses:
+        200:
+          description: OK
+          content:
+            application/hal+json:
+              schema:
+                $ref: '#/components/schemas/Plan'
+          headers:
+            API-Version:
+              $ref: '#/components/headers/API-Version'
+        400:
+          $ref: '#/components/responses/400'
+        401:
+          $ref: '#/components/responses/401'
+        404:
+          $ref: '#/components/responses/404'
+        406:
+          $ref: '#/components/responses/406'
+        500:
+          $ref: '#/components/responses/500'
+        503:
+          $ref: '#/components/responses/503'
+components:
+  headers:
+    API-Version:
+      description: Versie van de API
+      schema:
+        type: string
+        x-dws-expr: "`4.0.0`"
+  parameters:
+    pathPlanId:
+      x-dws-filter: plan.id
+      name: planId
+      description: 'NEN3610ID: Identificatiecode van een plan'
+      in: path
+      required: true
+      schema:
+        type: string
+  responses:
+    400:
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ExtendedError'
+      description: Bad request. Je request body bevat geen geldige JSON of de query wordt niet ondersteund door de API.
+      headers:
+        API-Version:
+          $ref: '#/components/headers/API-Version'
+    401:
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Error'
+      description: Unauthorized. Je hebt waarschijnlijk geen geldige `X-Api-Key` header meegestuurd.
+      headers:
+        API-Version:
+          $ref: '#/components/headers/API-Version'
+    404:
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Error'
+      description: Not found
+      headers:
+        API-Version:
+          $ref: '#/components/headers/API-Version'
+    406:
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Error406'
+      description: >-
+        Not Acceptable. Je hebt waarschijnlijk een gewenst formaat met de `Accept` header verstuurd welke niet
+        ondersteund wordt. De API kan momenteel alleen `application/hal+json` terugsturen.
+      headers:
+        API-Version:
+          $ref: '#/components/headers/API-Version'
+    412:
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Error'
+      description: >-
+        Precondition Failed. De preconditie die wordt gegeven door één of meer velden in de request-header, ontbraken
+        of zijn na validatie op de server afgekeurd.
+      headers:
+        API-Version:
+          $ref: '#/components/headers/API-Version'
+    500:
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Error5xx'
+      description: Internal server error. Er vindt een storing plaats.
+      headers:
+        API-Version:
+          $ref: '#/components/headers/API-Version'
+    503:
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Error'
+      description: Service Unavailable. Er vindt mogelijk (gepland) onderhoud of een storing plaats."
+      headers:
+        API-Version:
+          $ref: '#/components/headers/API-Version'
+  schemas:
+    Plan:
+      type: object
+      required:
+        - id
+        - type
+        - beleidsmatigVerantwoordelijkeOverheid
+        - naam
+        - locatienamen
+        - planstatusInfo
+        - verwijzingNaarVaststellingsbesluit
+        - besluitnummer
+        - verwijzingNorm
+        - normadressant
+        - ondergronden
+        - relatiesMetExternePlannen
+        - illustraties
+        - heeftOnderdelen
+        - regelStatus
+        - regelBinding
+        - dossier
+        - isHistorisch
+        - verwijderdOp
+        - eindeRechtsgeldigheid
+        - isParapluplan
+        - _links
+      properties:
+        id:
+          type: string
+          example: NL.IMRO.0200.bp1253-vas1
+        type:
+          $ref: '#/components/schemas/PlanType'
+        beleidsmatigVerantwoordelijkeOverheid:
+          type: object
+          required:
+            - type
+            - code
+            - naam
+          properties:
+            type:
+              type: string
+              enum:
+                - gemeentelijke overheid
+                - deelgemeente/stadsdeel
+                - provinciale overheid
+                - nationale overheid
+              example: gemeentelijke overheid
+            code:
+              type: string
+              description: >-
+                CBS-code van de beleidsmatig verantwoordelijke overheid. Altijd 4 cijfers, indien nodig aangevuld met
+                voorloopnullen.
+              nullable: true
+              example: '0200'
+            naam:
+              type: string
+              nullable: true
+              example: gemeente Apeldoorn
+        naam:
+          type: string
+          example: Woningbouwlocatie Laan van Westenenk 501-701
+        locatienamen:
+          type: array
+          items:
+            type: string
+            nullable: true
+            example: Voormalig TNO-terrein
+        planstatusInfo:
+          $ref: '#/components/schemas/PlanstatusInfo'
+        verwijzingNaarVaststellingsbesluit:
+          type: string
+          nullable: true
+          example: 'https://ruimtelijkeplannen.nl/documents/NL.IMRO.0200.bp1253-vas1/vb_NL.IMRO.0200.bp1253-vas1.pdf'
+        besluitnummer:
+          type: string
+          nullable: true
+          example: 3-2016
+        verwijzingNorm:
+          type: array
+          items:
+            type: string
+          example:
+            - IMRO2012
+            - PRBP2012
+            - PRABPK2012
+        normadressant:
+          type: array
+          items:
+            type: string
+            nullable: true
+            example: niet nader aangeduid
+        ondergronden:
+          type: array
+          items:
+            type: object
+            required:
+              - type
+              - datum
+            properties:
+              type:
+                type: string
+                nullable: true
+                example: grootschalige basiskaart (GBK)
+              datum:
+                type: string
+                nullable: true
+                example: '2015-03-25'
+        relatiesMetExternePlannen:
+          type: object
+          x-dws-envelope: true
+          required:
+            - vervangt
+            - tenGevolgeVan
+            - muteert
+            - gebruiktInformatieUit
+            - gedeeltelijkeHerzieningVan
+            - uitTeWerkenIn
+            - uitgewerktIn
+          properties:
+            vervangt:
+              type: array
+              items :
+                $ref: '#/components/schemas/RelatieMetExternPlanReferentie'
+            tenGevolgeVan:
+              type: array
+              items :
+                $ref: '#/components/schemas/RelatieMetExternPlanReferentie'
+            muteert:
+              type: array
+              items :
+                $ref: '#/components/schemas/RelatieMetExternPlanReferentie'
+            gebruiktInformatieUit:
+              type: array
+              items :
+                $ref: '#/components/schemas/RelatieMetExternPlanReferentie'
+            gedeeltelijkeHerzieningVan:
+              type: array
+              items :
+                $ref: '#/components/schemas/RelatieMetExternPlanReferentie'
+            uitTeWerkenIn:
+              type: array
+              items :
+                $ref: '#/components/schemas/RelatieMetExternPlanReferentie'
+            uitgewerktIn:
+              type: array
+              items :
+                $ref: '#/components/schemas/RelatieMetExternPlanReferentie'
+        illustraties:
+          type: array
+          items:
+            $ref: '#/components/schemas/IllustratieReferentie'
+        heeftOnderdelen:
+          type: array
+          items:
+            type: object
+            required:
+              - externeReferenties
+              - type
+              - heeftObjectgerichteTeksten
+            properties:
+              externeReferenties:
+                type: array
+                items:
+                  type: string
+                  example: 'https://ruimtelijkeplannen.nl/documents/NL.IMRO.0200.bp1253-vas1/r_NL.IMRO.0200.bp1253-vas1.html'
+              type:
+                type: string
+                example: regels
+              heeftObjectgerichteTeksten:
+                type: array
+                items:
+                  type: object
+                  required:
+                    - type
+                    - titel
+                    - href
+                  properties:
+                    href:
+                      type: string
+                      x-dws-expr: "`${env.dotwebstack.template.baseUrl}/plannen/${fields._parent._parent.id}/teksten/${fields.id}`"
+                      example: 'https://ruimte.omgevingswet.overheid.nl/ruimtelijke-plannen/api/opvragen/v4/plannen/NL.IMRO.0200.bp1253-vas1/teksten/NL.IMRO.PT.regels.s93'
+                    titel:
+                      type: string
+                      example: Regels
+                    type:
+                      type: string
+                      example: regels
+        regelStatus:
+          type: string
+          nullable: true
+          example: geldend
+        regelBinding:
+          type: string
+          nullable: true
+          example: burgerbindend
+        dossier:
+          type: object
+          required:
+            - id
+            - status
+          nullable: true
+          properties:
+            id:
+              type: string
+              nullable: false
+              example: NL.IMRO.0200.bp1253
+            status:
+              type: string
+              nullable: true
+              example: geheel onherroepelijk in werking
+        isHistorisch:
+          type: boolean
+        verwijderdOp:
+          type: string
+          format: date-time
+          nullable: true
+        eindeRechtsgeldigheid:
+          type: string
+          format: date
+        isParapluplan:
+          type: boolean
+        _links:
+          $ref: '#/components/schemas/PlanLinks'
+    PlanLinks:
+      type: object
+      x-dws-envelope: true
+      required:
+        - self
+      properties:
+        self:
+          type: object
+          x-dws-envelope: true
+          properties:
+            href:
+              type: string
+              x-dws-expr: "`${env.dotwebstack.template.baseUrl}/plannen/${fields.id}`"
+              example: 'https://ruimte.omgevingswet.overheid.nl/ruimtelijke-plannen/api/opvragen/v4/plannen/NL.IMRO.0200.bp1253-vas1'
+    CartografieInfo:
+      type: array
+      items:
+        type: object
+        nullable: true
+        required:
+          - kaartnummer
+          - kaartnaam
+          - symboolCode
+        properties:
+          kaartnummer:
+            type: integer
+            format: int32
+            example: 1
+          kaartnaam:
+            type: string
+            example: Structuurvisie Baarn
+          symboolCode:
+            type: string
+            nullable: true
+            example: ES039
+    CollectieLinks:
+      type: object
+      required:
+        - self
+      x-dws-envelope: true
+      properties:
+        self:
+          type: object
+          description: Absolute link naar huidige pagina
+          required:
+            - href
+          x-dws-envelope: true
+          properties:
+            href:
+              x-dws-expr: "`${env.dotwebstack.template.baseUrl}` + get('request.uri')"
+              type: string
+              format: uri
+              description: URL van de link
+              example: 'https://ruimte.omgevingswet.overheid.nl/ruimtelijke-plannen/api/opvragen/v4/_zoek?page=2'
+        prev:
+          type: object
+          description: Absolute link naar vorige pagina ('null' als er geen vorige pagina is)
+          required:
+            - href
+          nullable: true
+          x-dws-envelope: true
+          properties:
+            href:
+              x-dws-expr: "hal:prev(get('env.dotwebstack.template.baseUrl'), get('request.uri'))"
+              type: string
+              format: uri
+              description: URL van de link
+              example: 'https://ruimte.omgevingswet.overheid.nl/ruimtelijke-plannen/api/opvragen/v4/_zoek?page=1'
+        next:
+          type: object
+          description: Absolute link naar volgende pagina (`null` als er geen volgende pagina is)
+          required:
+            - href
+          x-dws-envelope: true
+          properties:
+            href:
+              x-dws-expr: "data.size() == args.pageSize ? hal:next(get('env.dotwebstack.template.baseUrl'), get('request.uri')) : null"
+              type: string
+              format: uri
+              description: URL van de link
+              example: 'https://ruimte.omgevingswet.overheid.nl/ruimtelijke-plannen/api/opvragen/v4/_zoek?page=3'
+    ExterneReferentie:
+      type: object
+      description: Verwijzing naar niet-html brondata.
+      required:
+        - href
+        - label
+      properties:
+        href:
+          type: string
+          example: 'https://www.ruimtelijkeplannen.nl/documents/NL.IMRO.0200.bp1253-vas1/b_NL.IMRO.0200.bp1253-vas1_rb1.pdf'
+        label:
+          type: string
+          example: Bijlage 1 Lijst van toegelaten bedrijfstypen
+      nullable: true
+    IdsCollection:
+      description: 'Array of NEN3610ID: Identificatiecodes'
+      type: object
+      required:
+        - ids
+      properties:
+        ids:
+          type: array
+          items:
+            type: string
+            example: NL.IMRO.0200.bp1253-vas1
+    IllustratieReferentie:
+      type: object
+      required:
+        - href
+        - type
+        - naam
+        - legendanaam
+      properties:
+        href:
+          type: string
+          example: 'https://ruimtelijkeplannen.nl/documents/NL.IMRO.0200.sv1002-vas1/i_NL.IMRO.0200.sv1002-vas1_1.pdf'
+        type:
+          type: string
+          example: kaart
+        naam:
+          type: string
+          nullable: true
+          example: Regionale Structuurvisie Stedendriehoek 2030
+        legendanaam:
+          type: string
+          nullable: true
+          example: Beleidskaart
+    PlanstatusInfo:
+      type: object
+      required:
+        - planstatus
+        - datum
+      properties:
+        planstatus:
+          type: string
+          enum:
+            - concept
+            - voorontwerp
+            - ontwerp
+            - vastgesteld
+            - geconsolideerd
+            - onherroepelijk
+            - geconsolideerde versie
+            - beroep afdeling bestuursrechtspraak
+            - kabinetsvoornemen
+            - goedgekeurd
+            - goedgekeurd; geheel goedgekeurd
+            - goedgekeurd; goedgekeurd met uitzondering van onthoudingen
+            - goedkeuring onthouden
+            - kabinetsstandpunt
+            - resultaten van inspraak bestuurlijk overleg en advies
+            - uitspraak afdeling bestuursrechtspraak
+            - 'uitspraak afdeling bestuursrechtspraak: alsnog goedgekeurd'
+            - 'uitspraak afdeling bestuursrechtspraak: alsnog goedkeuring onthouden'
+            - vastgesteld beleid
+            - vigerend
+            - voorlopige voorziening
+          example: vastgesteld
+        datum:
+          type: string
+          format: date
+    PlanType:
+      type: string
+      description: >-
+        De types `buiten toepassing verklaring beheersverordening` en `rijksbestemmingsplan` zouden in de praktijk
+        niet voor mogen komen, dit is een datakwaliteit issue.
+      enum:
+        - uitwerkingsplan
+        - wijzigingsplan
+        - inpassingsplan
+        - beheersverordening
+        - bestemmingsplan
+        - exploitatieplan
+        - tijdelijke ontheffing buitenplans
+        - omgevingsvergunning
+        - projectbesluit
+        - reactieve aanwijzing
+        - gerechtelijke uitspraak
+        - voorbereidingsbesluit
+        - provinciale verordening
+        - aanwijzingsbesluit
+        - amvb
+        - regeling
+        - structuurvisie
+        - rijksbestemmingsplan
+        - buiten toepassing verklaring beheersverordening
+        - gemeentelijke visie; overig
+      example: bestemmingsplan
+    RelatieMetExternPlanReferentie:
+      type: object
+      description: Relatie met extern plan.
+      required:
+        - naam
+        - href
+      properties:
+        naam:
+          type: string
+          nullable: true
+          example: Malkenschoten-Kayersmolen
+        href:
+          type: string
+          nullable: true
+          x-dws-expr:
+            value: "`${env.dotwebstack.template.baseUrl}/plannen/${fields.id}`"
+            fallback: null
+          example: 'https://ruimte.omgevingswet.overheid.nl/ruimtelijke-plannen/api/opvragen/v4/plannen/NL.IMRO.0200.bp1002-ont1'
+    Error:
+      type: object
+      description: 'Object gespecificeerd volgens https://tools.ietf.org/html/rfc7807.'
+      required:
+        - title
+        - status
+        - detail
+      properties:
+        type:
+          type: string
+          description: URI naar een pagina met meer informatie over deze foutmelding voor de ontwikkelaar.
+          example: 'about:blank'
+        title:
+          type: string
+          example: Not Found
+        status:
+          type: integer
+          format: int32
+          example: 404
+        detail:
+          type: string
+          example: HTTP 404 Not Found
+        instance:
+          type: string
+          example: self
+    Error406:
+      type: object
+      description: 'Object gespecificeerd volgens https://tools.ietf.org/html/rfc7807.'
+      required:
+        - title
+        - status
+        - detail
+        - acceptable
+      properties:
+        type:
+          type: string
+          description: >-
+            URI naar een pagina met meer informatie over deze foutmelding voor
+            de ontwikkelaar.
+          example: 'about:blank'
+        title:
+          type: string
+          example: Not Acceptable
+        status:
+          type: integer
+          format: int32
+          example: 406
+        detail:
+          type: string
+          example: HTTP 406 Not Acceptable
+        instance:
+          type: string
+          example: self
+        acceptable:
+          type: array
+          items:
+            type: string
+          x-dws-expr: "acceptableMimeTypes"
+          example: '[application/hal+json]'
+    Error5xx:
+      type: object
+      description: 'Object gespecificeerd volgens https://tools.ietf.org/html/rfc7807.'
+      required:
+        - title
+        - status
+        - detail
+      properties:
+        type:
+          type: string
+          description: >-
+            URI naar een pagina met meer informatie over deze foutmelding voor
+            de ontwikkelaar.
+          example: 'about:blank'
+        title:
+          type: string
+          example: Service Unavailable
+        status:
+          type: integer
+          format: int32
+          example: 503
+        detail:
+          type: string
+          x-dws-expr: "`An error occured from which the server was unable to recover. Please contact the API maintainer with the following details: ${requestId}`"
+          example: HTTP 503 Service Unavailable
+        instance:
+          type: string
+          example: self
+    ExtendedError:
+      type: object
+      description: 'Object gespecificeerd volgens https://tools.ietf.org/html/rfc7807.'
+      required:
+        - title
+        - status
+        - detail
+        - invalidParams
+      properties:
+        type:
+          type: string
+          description: URI naar een pagina met meer informatie over deze foutmelding voor de ontwikkelaar.
+          example: 'about:blank'
+        title:
+          type: string
+          example: Bad Request
+        status:
+          type: integer
+          format: int32
+          example: 400
+        detail:
+          type: string
+          example: Request parameters didn't validate.
+        instance:
+          type: string
+          example: self
+        invalidParams:
+          type: array
+          items:
+            type: object
+            required:
+              - name
+              - reason
+            properties:
+              name:
+                type: string
+                example: validation.request.parameter.enum.invalid
+              reason:
+                type: string
+                example: >-
+                  Value `epsg:dummy` for parameter `Accept-Crs` is not allowed.
+                  Allowed values are <[epsg:4258, epsg:28992]>.
+  securitySchemes:
+    apiKey:
+      description: >-
+        De API-key die je hebt gekregen dient bij elke request naar de API via de `X-Api-Key` request header
+        meegestuurd te worden. Indien deze niet juist wordt meegestuurd, of het een ongeldige key betreft, zul je de
+        foutmelding `403 Forbidden` terugkrijgen.
+      in: header
+      name: X-Api-Key
+      type: apiKey
+security:
+  - apiKey: [ ]

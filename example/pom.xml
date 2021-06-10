@@ -16,6 +16,7 @@
     <module>example-json</module>
     <module>example-postgres</module>
     <module>example-rdf4j</module>
+    <module>example-oas</module>
   </modules>
 
 </project>

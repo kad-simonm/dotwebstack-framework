@@ -1,0 +1,11 @@
+logging:
+  level:
+    ROOT: INFO
+    org.dotwebstack: DEBUG
+
+  template:
+    baseUrl: ${BASE_URL:https://ruimte.omgevingswet.overheid.nl/ruimtelijke-plannen/api/opvragen/v4}
+
+  openapi:
+    xdwsStringTypes:
+      - geometry

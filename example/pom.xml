@@ -17,6 +17,7 @@
     <module>example-postgres</module>
     <module>example-rdf4j</module>
     <module>example-oas</module>
+    <module>example-ihr-rp</module>
   </modules>
 
 </project>

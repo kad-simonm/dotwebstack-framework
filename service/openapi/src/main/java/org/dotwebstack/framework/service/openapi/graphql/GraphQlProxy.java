@@ -23,7 +23,7 @@ public class GraphQlProxy {
   }
 
   public ExecutionResult execute(ExecutionInput executionInput) {
-    URI uri = URI.create("https://a83a9327-c1b8-42f8-b3c5-049baf943a84.mock.pstmn.io/graphql");
+    URI uri = URI.create("http://localhost:8080");
     HttpRequest.BodyPublisher bodyPublisher = HttpRequest.BodyPublishers.ofString(executionInput.getQuery());
     HttpRequest request = HttpRequest.newBuilder()
         .uri(uri)

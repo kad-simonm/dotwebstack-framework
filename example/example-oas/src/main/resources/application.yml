@@ -9,3 +9,5 @@ logging:
   openapi:
     xdwsStringTypes:
       - geometry
+server:
+  port: 8081

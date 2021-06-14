@@ -147,7 +147,6 @@ paths:
       x-dws-query:
         field: plan
         requiredFields:
-          - heeftOnderdelen.heeftObjectgerichteTeksten.id
           - tenGevolgeVan.id
           - gedeeltelijkeHerzieningVan.id
           - uitTeWerkenIn.id
@@ -293,16 +292,10 @@ components:
         - besluitnummer
         - verwijzingNorm
         - normadressant
-        - ondergronden
-        - relatiesMetExternePlannen
-        - illustraties
-        - heeftOnderdelen
         - regelStatus
         - regelBinding
         - dossier
         - isHistorisch
-        - verwijderdOp
-        - eindeRechtsgeldigheid
         - isParapluplan
         - _links
       properties:

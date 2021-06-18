@@ -47,7 +47,7 @@ jobs:
           
       - name: Code signing
         run: |
-          openssl aes-256-cbc -K $encrypted_1cc2137e332d_key -iv $encrypted_1cc2137e332d_iv -in codesigning.asc.enc -out codesigning.asc -d
+          openssl aes-256-cbc -K $encrypted_1cc2137e332d_key -in codesigning.asc.enc -out codesigning.asc -d
           gpg --fast-import codesigning.asc
         env:
           encrypted_1cc2137e332d_key: ${{ secrets.ENCRYPTED_1CC2137E332D_KEY }}

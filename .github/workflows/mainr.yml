@@ -18,4 +18,7 @@ on:
         description: "Default version to use for new local working copy."
         required: true
         default: "X.Y.Z-SNAPSHOT"
+jobs:
+  release:
+    runs-on: ubuntu-latest
     

@@ -35,6 +35,9 @@ jobs:
         with:
           java-version: '11'
           distribution: 'adopt'
+          server-id: ossrh
+          server-username: ${{ secrets.OSSRH_USERNAME }}
+          server-password: ${{ secrets.OSSRH_TOKEN }}
 
       - name: Configure Git User
         run: |
@@ -50,10 +53,8 @@ jobs:
 #           encrypted_1cc2137e332d_iv: ${{ secrets.ENCRYPTED_1CC2137E332D_IV }} 
 
       - name: Maven Release
-        run: mvn release:prepare release:perform -B -P release -s .maven_settings.xml -DreleaseVersion=${{ github.event.inputs.releaseVersion }} -DdevelopmentVersion=${{ github.event.inputs.developmentVersion }}
+        run: mvn release:prepare release:perform -B -P release -DreleaseVersion=${{ github.event.inputs.releaseVersion }} -DdevelopmentVersion=${{ github.event.inputs.developmentVersion }}
         env:
-          OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
-          OSSRH_TOKEN: ${{ secrets.OSSRH_TOKEN }}
           GITHUB_ACTOR: ${{ github.actor }}
           GITHUB_TOKEN: ${{ github.token }}
     

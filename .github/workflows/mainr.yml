@@ -53,7 +53,7 @@ jobs:
 #           encrypted_1cc2137e332d_iv: ${{ secrets.ENCRYPTED_1CC2137E332D_IV }} 
 
       - name: Maven Release
-        run: mvn release:prepare release:perform -B -DreleaseVersion=${{ github.event.inputs.releaseVersion }} -DdevelopmentVersion=${{ github.event.inputs.developmentVersion }}
+        run: mvn release:prepare release:perform -B -DskipRemoteStaging=true -DreleaseVersion=${{ github.event.inputs.releaseVersion }} -DdevelopmentVersion=${{ github.event.inputs.developmentVersion }}
         env:
           GITHUB_ACTOR: ${{ github.actor }}
           GITHUB_TOKEN: ${{ github.token }}

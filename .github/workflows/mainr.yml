@@ -39,9 +39,4 @@ jobs:
         with:
           java-version: '11'
           distribution: 'adopt'
-
-      - name: Configure Git User
-        run: |
-          git config user.email "actions@github.com"
-          git config user.name "GitHub Actions"
     

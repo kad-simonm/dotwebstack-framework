@@ -48,8 +48,8 @@ jobs:
       - name: Maven Release
         run: mvn release:prepare release:perform -B -s .maven_settings.xml -DreleaseVersion=${{ github.event.inputs.releaseVersion }} -DdevelopmentVersion=${{ github.event.inputs.developmentVersion }}
         env:
-          OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
-          OSSRH_TOKEN: ${{ secrets.OSSRH_TOKEN }}
+#           OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
+#           OSSRH_TOKEN: ${{ secrets.OSSRH_TOKEN }}
           GITHUB_ACTOR: ${{ github.actor }}
           GITHUB_TOKEN: ${{ github.token }}
     

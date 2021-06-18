@@ -22,5 +22,5 @@ jobs:
   release:
     runs-on: ubuntu-latest
     steps: 
-      - uses: actions/checkout@v2
+      - run: echo "Hello world" 
     

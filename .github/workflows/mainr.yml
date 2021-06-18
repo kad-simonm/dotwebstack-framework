@@ -18,12 +18,4 @@ on:
         description: "Default version to use for new local working copy."
         required: true
         default: "X.Y.Z-SNAPSHOT"
-jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-        with:
-          ref: ${{ github.event.inputs.branch }}
     

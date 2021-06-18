@@ -50,7 +50,7 @@ jobs:
 #           encrypted_1cc2137e332d_iv: ${{ secrets.ENCRYPTED_1CC2137E332D_IV }} 
 
       - name: Maven Release
-        run: mvn release:prepare release:perform -B -DdryRun=true -P release -s .maven_settings.xml -DreleaseVersion=${{ github.event.inputs.releaseVersion }} -DdevelopmentVersion=${{ github.event.inputs.developmentVersion }}
+        run: mvn release:prepare release:perform -B -P release -s .maven_settings.xml -DreleaseVersion=${{ github.event.inputs.releaseVersion }} -DdevelopmentVersion=${{ github.event.inputs.developmentVersion }}
         env:
           OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
           OSSRH_TOKEN: ${{ secrets.OSSRH_TOKEN }}

@@ -29,9 +29,9 @@
   </organization>
 
   <scm>
-    <url>https://github.com/dotwebstack/dotwebstack-framework</url>
-    <connection>scm:git:git@github.com:dotwebstack/dotwebstack-framework.git</connection>
-    <developerConnection>scm:git:git@github.com:dotwebstack/dotwebstack-framework.git
+    <url>https://github.com/kad-simonm/dotwebstack-framework</url>
+    <connection>scm:git:git@github.com/kad-simonm/dotwebstack-framework.git</connection>
+    <developerConnection>scm:git:git@github.com/kad-simonm/dotwebstack-framework.git
     </developerConnection>
     <tag>HEAD</tag>
   </scm>
